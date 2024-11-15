@@ -1,0 +1,32 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+header{
+    background-color: #337AB7;
+    height: 8vh;
+}
+
+.headerButtons button{
+    border: none;
+    background-color: #337AB7;
+    font-size: 14px; 
+}
+
+.containerBody
+{
+    width: 60%;
+    border-radius: 20px;
+    margin: auto;
+}
+
+.subcontainerRight{
+    width:60%;
+}
+
+.subcontainerLeft{
+    width:40%;
+    background-color: #337AB7;
+    border-radius: 20px 0px 0px 20px;
+}
