@@ -18,12 +18,28 @@
                     </div>
                 </header>
 
-               <div class="containerMain p-3 mt-5">
-                    <div class="containerBody border h-75 d-flex">
-                        <div class="subcontainerLeft">
+               <div class="containerMain h-100 mt-5">
+                    <div class="containerBody border  d-flex bg-white">
+
+                        <div class="subcontainerLeft d-flex align-items-center p-5">
+                            <img src="Assets/Images/addressBook.png" class="ms-5" alt="No image found" height="100" width="100">
                         </div>
-                        <div class="subcontainerRight">
+
+                        <div class="subcontainerRight d-flex flex-column align-items-center justify-content-around">
+                            <span class="signUpHeading">SIGN UP</span>
+                            <input type="text" class="fullName" name="fullName" placeholder="Full Name">
+                            <input type="text" class="emailId" name="emailId"  placeholder="Email Id">
+                            <input type="text" class="userName" name="userName" placeholder="User Name">
+                            <input type="text" class="password" name="password" placeholder="Password">
+                            <input type="text" class="confirmPassword"  name="confirmPassword" placeholder="Confirm Password">
+                            <div class="userImageContainer p-2">
+                                <input type="file" class="userImage" name="userImage">
+                                <span>Upload User Image</span>
+                            </div>
+                            <button class="registerButton">REGISTER</button>
+                            <span>Already have an account? <a class="text-decoration-none" href="Login.cfm"> Login</a></span>
                         </div>
+
                     </div>                   
                </div>
             </form>
