@@ -2,11 +2,12 @@
     <head>
         <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
+        <script src="js/script.js"></script>
     </head>
 
     <body>
         <div>
-            <form>
+            <form method="post" enctype="multipart/form-data">
                 <header class="py-2 px-5 d-flex justify-content-between">
                     <div class="">
                         <img src="Assets/Images/addressBook.png" alt="No image found" height="35" width="35">
@@ -27,22 +28,43 @@
 
                         <div class="subcontainerRight d-flex flex-column align-items-center justify-content-around">
                             <span class="signUpHeading">SIGN UP</span>
-                            <input type="text" class="fullName" name="fullName" placeholder="Full Name">
-                            <input type="text" class="emailId" name="emailId"  placeholder="Email Id">
-                            <input type="text" class="userName" name="userName" placeholder="User Name">
-                            <input type="text" class="password" name="password" placeholder="Password">
-                            <input type="text" class="confirmPassword"  name="confirmPassword" placeholder="Confirm Password">
+                            <input type="text" class="fullName" name="fullName" id="fullName" placeholder="Full Name">
+                                <span id="errorFullName" class="text-danger"></span>
+                            <input type="text" class="emailId"  name="emailId"  id="emailId"  placeholder="Email Id">
+                                <span id="errorEmailId" class="text-danger"></span>
+                            <input type="text" class="userName" name="userName" id="userName" placeholder="User Name">
+                                <span id="errorUserName" class="text-danger"></span>
+                            <input type="password" class="password" name="password" id="password" placeholder="Password">
+                                <span id="errorPassword" class="text-danger"></span>
+                            <input type="password" class="confirmPassword"  name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">
+                                <span id="errorConfirmPassword" class="text-danger"></span>
                             <div class="userImageContainer p-2">
-                                <input type="file" class="userImage" name="userImage">
+                                <input type="file" class="userImage" name="userImage" id="userImage">
                                 <span>Upload User Image</span>
+                                <span id="errorImage" class="text-danger"></span>
                             </div>
-                            <button class="registerButton">REGISTER</button>
+                            <button type="submit" name="register" class="registerButton" onclick="signUpVal(event)">REGISTER</button>
                             <span>Already have an account? <a class="text-decoration-none" href="Login.cfm"> Login</a></span>
+                             <!-- cf starts here -->
+                            <cfif structKeyExists(form, "register")>
+                                <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.userImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
+                                </cffile>
+                                <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                                <cfloop collection="#form#" item="item">
+                                    <cfset local.structUserInfo[item] = trim(form[item])>
+                                </cfloop>
+                                <cfset local.structUserInfo["imagePath"] = local.imagePath>
+                                <cfset local.obj = createObject("component", "components.addressBook")>
+                                <cfset local.result = local.obj.signUpInput(local.structUserInfo)>
+                                <cfoutput>
+                                    <span class="fw-bold bg-success text-white">#local.result#</span>
+                                </cfoutput>
+                            </cfif>
                         </div>
-
                     </div>                   
                </div>
             </form>
+           
         </div>
     </body>    
 </html>

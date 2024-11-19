@@ -98,6 +98,7 @@ header{
 
 .userImageDiv img{
     width:100%;
+    height: 100%;
 }
 
 .userNameSpan{
@@ -374,4 +375,29 @@ header{
 
 .modalEditRightBox{
     width:20%;
+}
+
+.userImageDivView{
+    width:15vh;
+    height:15vh;
+}
+
+.userImageDivView img{
+    width:100%;
+    height: 100%;
+}
+
+.infoDiv .headings{
+    width:30%;
+    color: #337AB7;
+    font-size:17px;
+    font-weight: 600;
+}
+
+.infoDiv .middle{
+    width:20%;
+}
+
+.infoDiv .userDetails{
+    width:50%;
 }
