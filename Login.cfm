@@ -6,7 +6,7 @@
 
     <body>
         <div>
-            <form>
+            <form method="post">
                 <header class="py-2 px-5 d-flex justify-content-between">
                     <div class="">
                         <img src="Assets/Images/addressBook.png" alt="No image found" height="35" width="35">
@@ -28,8 +28,8 @@
                         <div class="subcontainerRight d-flex flex-column align-items-center justify-content-around">
                             <span class="loginHeading">LOGIN</span>
                             <input type="text" class="userName" name="userName" placeholder="User Name">
-                            <input type="text" class="password" name="password" placeholder="Password">
-                            <button class="registerButton">LOGIN</button>
+                            <input type="password" class="password" name="password" placeholder="Password">
+                            <button class="registerButton" name="login">LOGIN</button>
                              <div>
                                 <span class="textLogin p-3">Or Sign In Using</span>
                                 <div class="d-flex p-2">
@@ -43,6 +43,15 @@
                     </div>                   
                </div>
             </form>
+            <cfif structKeyExists(form, "login")>
+                <cfset local.obj = createObject("component", "components.addressBook")>
+                <cfset local.result = local.obj.userLogin(form.userName,form.password)>
+                <cfif local.result>
+                    <cflocation  url="Home.cfm" addToken="no">
+                <cfelse>
+                    <span class="fw-bold text-danger">Invalid User Name and Password</span>
+                </cfif>
+            </cfif>
         </div>
     </body>    
 </html>
