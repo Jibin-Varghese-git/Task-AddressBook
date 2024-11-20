@@ -114,13 +114,14 @@ function signUpVal(event){
 function funlogout(){
     if(confirm("Do you want to logout?"))
     {
-        alert("hello")
+        
         $.ajax({
             type:"GET",
             url:"components/addressBook.cfc?method=logout",
             success:function(result){
                 if(result)
                 {
+                   
                     location.reload();
                 }
                 else
@@ -238,14 +239,17 @@ function funModalVal(event){
     else if(isNaN(pincode))
     {
         document.getElementById("errorPincode").innerHTML="Invalid!";
+        event.preventDefault();
     }
     else if(pincode.length < 6)
     {
         document.getElementById("errorPincode").innerHTML="Invalid! Must Contain 6 digits";
+        event.preventDefault();
     }
     else if(pincode.length > 6)
     {
         document.getElementById("errorPincode").innerHTML="Invalid! 6 digits only";
+        event.preventDefault();
     }
 
     if(emailId.trim().length == "")
@@ -267,15 +271,117 @@ function funModalVal(event){
     else if(isNaN(phoneNo))
     {
         document.getElementById("errorPhoneNo").innerHTML="Phone Number only contains number";
+        event.preventDefault();
     }
     else if(phoneNo.length < 10)
     {
         document.getElementById("errorPhoneNo").innerHTML="Invalid! Must Contain 10 digits";
+        event.preventDefault();
     }
     else if(phoneNo.length > 10)
     {
         document.getElementById("errorPhoneNo").innerHTML="Invalid! 10 digits only";
+        event.preventDefault();
     }
     
-    
+}
+
+function funDelete(contactId){
+    if(confirm("Do you want to Delete this  Contact?"))
+        {
+            $.ajax({
+                type:"GET",
+                url:"components/addressBook.cfc?method=deleteContact",
+                data:{contactId : contactId.value},
+                success:function(result){
+                    if(result)
+                    {
+                       
+                        location.reload();
+                    }
+                    else
+                    {
+                       alert("error")
+                    }
+                }
+            });
+        } 
+}
+
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+function funViewContact(contactId){
+    $.ajax({
+        type : "GET",
+        url : "components/addressBook.cfc?method=viewContact",
+        data : {contactId : contactId.value},
+        success:function(result){
+                if(result)
+                {
+                   structContactUser=JSON.parse(result)
+                   document.getElementById("userNameView").innerHTML= structContactUser.title + " " + structContactUser.firstName + " " +structContactUser.lastName;
+                   document.getElementById("genderView").innerHTML= structContactUser.gender;
+                   document.getElementById("dobView").innerHTML= structContactUser.dob;
+                   document.getElementById("addressView").innerHTML= structContactUser.address;
+                   document.getElementById("streetView").innerHTML= structContactUser.street;
+                   document.getElementById("districtView").innerHTML= structContactUser.district;
+                   document.getElementById("stateView").innerHTML= structContactUser.state;
+                   document.getElementById("countryView").innerHTML= structContactUser.country;
+                   document.getElementById("pincodeView").innerHTML= structContactUser.pincode;
+                   document.getElementById("emailIdView").innerHTML= structContactUser.emailId;
+                   document.getElementById("phoneNoView").innerHTML= structContactUser.phoneNo;
+                   document.getElementById("userContactImage").src= structContactUser.contactImage
+                }
+                else
+                {
+                   alert("error")
+                }
+        }
+    });
+}
+
+function funEditContact(contactId){
+    $.ajax({
+        type : "GET",
+        url : "components/addressBook.cfc?method=selectContact",
+        data : {contactId : contactId.value},
+        success:function(result){
+                if(result)
+                {
+                    structContactUser=JSON.parse(result)
+                    alert(structContactUser.title)
+                    document.getElementById("modalHeading").innerHTML= "EDIT CONTACT"
+                    document.getElementById("contactTitle").value= structContactUser.title;
+                    document.getElementById("firstName").value= structContactUser.firstName;
+                    document.getElementById("lastName").value= structContactUser.lastName;
+                    document.getElementById("contactGender").value= structContactUser.gender;
+                    document.getElementById("dateOfBirth").value= structContactUser.dob;
+                    document.getElementById("imgHidden").value= structContactUser.contactImage;
+                    document.getElementById("address").value= structContactUser.address;
+                    document.getElementById("street").value= structContactUser.street;
+                    document.getElementById("district").value= structContactUser.district;
+                    document.getElementById("state").value= structContactUser.state;
+                    document.getElementById("country").value= structContactUser.country;
+                    document.getElementById("pincode").value= structContactUser.pincode;
+                    document.getElementById("emailId").value= structContactUser.emailId;
+                    document.getElementById("phoneNo").value= structContactUser.phoneNo;
+                    document.getElementById("editModalImage").src= structContactUser.contactImage;
+                    document.getElementById("addContactHidden").value= "edit";
+                    document.getElementById("addContact").value= structContactUser.contactId;
+
+                }
+                else
+                {
+                   alert("error")
+                }
+        }
+    });
+}
+
+function funCreateContact(){
+    document.getElementById("modalHeading").innerHTML= "CREATE CONTACT";
+    document.getElementById("editModalImage").src= "Assets/Images/user.png";
+    document.getElementById("createForm").reset();
 }

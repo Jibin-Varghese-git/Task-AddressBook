@@ -10,7 +10,7 @@
             <cflocation  url="Login.cfm" addToken="no">
         </cfif>
         <div>
-            <form method="post" enctype="multipart/form-data">
+            <div>
                 <header class="py-2 px-5 d-flex justify-content-between">
                     <div class="">
                         <img src="Assets/Images/addressBook.png" alt="No image found" height="35" width="35">
@@ -39,7 +39,7 @@
                                     <img src="#session.structUserDetails["userImage"]#" class="rounded-circle" alt="No image found">
                                 </div>
                                 <h6 class="userNameSpan ms-3">#session.structUserDetails["fullName"]#<h6>
-                                <button type="button" class="createContactBtn mt-3 py-2" data-bs-toggle="modal" data-bs-target="##modalEdit">CREATE CONTACT</button>
+                                <button type="button" class="createContactBtn mt-3 py-2" onclick="funCreateContact()" data-bs-toggle="modal" data-bs-target="##modalEdit">CREATE CONTACT</button>
                             </div>
 
                             <div class="contentBoxRight bg-white p-2">
@@ -57,143 +57,156 @@
                                 </div>
 
                                 <!--- Contact --->
-                                <div class="singleContact px-2 py-3 d-flex align-items-center">
-                                    <div class="ContactImageDiv">
-                                        <img src="Assets/Images/user.png" class="rounded-circle" alt="No image found">
-                                    </div>
-                                    <div class="contactDetails p-1 d-flex justify-content-between">
-                                        <div class="contactUserName">User Name</div>
-                                        <div class="contactUserEmail">User@ email</div>
-                                        <div class="contactPhnNo">7822227364</div>
-                                    </div>
-                                    <div class="contactButtons d-flex justify-content-around ms-4">
-                                        <button type="button" class="" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
-                                        <button>DELETE</button>
-                                        <button type="button"  data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
-                                    </div>
-                                </div>
+                                <cfset local.obj = createObject("component", "components.addressBook")>
+                                <cfset local.qryReadContact = local.obj.readContact()>
+
+                                <cfoutput>
+                                    <cfloop query="local.qryReadContact">
+                                    
+                                        <div class="singleContact px-2 py-3 d-flex align-items-center">
+                                            <div class="ContactImageDiv">
+                                                <img src="#local.qryReadContact.contactImage#" class="rounded-circle" alt="No image found">
+                                            </div>
+                                            <div class="contactDetails p-1 d-flex justify-content-between">
+                                                <div class="contactUserName">#local.qryReadContact.firstname# #local.qryReadContact.lastname#</div>
+                                                <div class="contactUserEmail overflow-hidden">#local.qryReadContact.emailId#</div>
+                                                <div class="contactPhnNo">#local.qryReadContact.phoneNo#</div>
+                                            </div>
+                                            <div class="contactButtons d-flex justify-content-around ms-4">
+                                                <button type="button" value="#local.qryReadContact.contactId#" onclick="funEditContact(this)" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
+                                                <button value="#local.qryReadContact.contactId#" onclick="funDelete(this)">DELETE</button>
+                                                <button type="button" value="#local.qryReadContact.contactId#" onclick="funViewContact(this)" data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
+                                            </div>
+                                        </div>
+
+                                    </cfloop>
+                                </cfoutput>
                             </div>
                         </div>
                     </cfoutput>
                 </div>
-                <!--- Modal Edit--->
+                <!--- Modal Edit/Add --->
                 <div class="modal fade" id="modalEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modalEditBox modal-content">
-                            <div class="d-flex">
-                                <div class="modalEditLeftBox bg-white p-5">
-                                    <div class="modalEditHeading p-2 my-2 text-center">
-                                        <span>CREATE  CONTACT<span>
-                                    </div>
-                                    <div class="modalEditSubHeading my-3">
-                                        <span>Personal  Contact<span>
-                                    </div>
-                                    <div class="personalInfoDiv1 d-flex my-3">
-                                        <div class="titleDiv">
-                                            <span>Title*</span><br>
-                                            <select class="selectTitle" id="contactTitle">
-                                                <option value="selected"></option>
-                                                <option value="Mr">Mr.</option>
-                                                 <option value="Mrs">Mrs</option>
-                                                  <option value="Miss">Miss</option>
-                                            </select><br>
-                                            <span class="text-danger fs-6" id="errorTitle"></span>
+                            <form method="post" enctype="multipart/form-data" id="createForm">
+                                <div class="d-flex">
+                                    <div class="modalEditLeftBox bg-white p-5">
+                                        <div class="modalEditHeading p-2 my-2 text-center">
+                                            <span id="modalHeading">CREATE  CONTACT<span>
                                         </div>
-                                        <div class="firstNameDiv me-2">
-                                            <span>First Name*</span>
-                                            <input type="text" name="firstName" id="firstName" placeholder="Your First Name">
-                                            <span class="text-danger fs-6" id="errorFname"></span>
+                                        <div class="modalEditSubHeading my-3">
+                                            <span>Personal  Contact<span>
                                         </div>
-                                        <div class="lastNameDiv ms-2">
-                                            <span>Last Name*</span>
-                                            <input type="text" name="lastName" id="lastName" placeholder="Your Last Name">
-                                            <span class="text-danger fs-6" id="errorLname"></span>
+                                        <div class="personalInfoDiv1 d-flex my-3">
+                                            <div class="titleDiv">
+                                                <span >Title*</span><br>
+                                                <select class="selectTitle" name="title" id="contactTitle">
+                                                    <option value="selected"></option>
+                                                    <option value="Mr">Mr.</option>
+                                                    <option value="Mrs">Mrs</option>
+                                                    <option value="Miss">Miss</option>
+                                                </select><br>
+                                                <span class="text-danger fs-6" id="errorTitle"></span>
+                                            </div>
+                                            <div class="firstNameDiv me-2">
+                                                <span>First Name*</span>
+                                                <input type="text" name="firstName" id="firstName" placeholder="Your First Name">
+                                                <span class="text-danger fs-6" id="errorFname"></span>
+                                            </div>
+                                            <div class="lastNameDiv ms-2">
+                                                <span>Last Name*</span>
+                                                <input type="text" name="lastName" id="lastName" placeholder="Your Last Name">
+                                                <span class="text-danger fs-6" id="errorLname"></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="personalInfoDiv2 d-flex my-3">
-                                        <div class="genderDiv me-4">
-                                            <span>Gender*</span><br>
-                                            <select class="selectGender" id="contactGender">
-                                                <option value="selected"></option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                            </select>
-                                            <span class="text-danger fs-6" id="errorGender"></span>
+                                        <div class="personalInfoDiv2 d-flex my-3">
+                                            <div class="genderDiv me-4">
+                                                <span>Gender*</span><br>
+                                                <select class="selectGender" id="contactGender" name="gender">
+                                                    <option value="selected"></option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                </select>
+                                                <span class="text-danger fs-6" id="errorGender"></span>
+                                            </div>
+                                            <div class="dateOfBirthDiv">
+                                                <span>Date of Birth*</span><br>
+                                                <input type="date" name="dateOfBirth" id="dateOfBirth" placeholder="dd-mm-yyyy">
+                                                <span class="text-danger fs-6" id="errorDob"></span>
+                                            </div>
                                         </div>
-                                        <div class="dateOfBirthDiv">
-                                            <span>Date of Birth*</span><br>
-                                            <input type="date" name="dateOfBirth" id="dateOfBirth" placeholder="dd-mm-yyyy">
-                                            <span class="text-danger fs-6" id="errorDob"></span>
+                                        <div class="personalInfoDiv3 my-3">
+                                            <span>Upload Photo</span><br>
+                                            <input type="hidden" value="null" name="imgHidden" id="imgHidden">
+                                            <input type="file" id="contactImage" name="contactImage" >
                                         </div>
-                                    </div>
-                                    <div class="personalInfoDiv3 my-3">
-                                        <span>Upload Photo</span><br>
-                                        <input type="file" id="contactImage" name="contactImage" >
+
+                                        <div class="modalEditSubHeading my-3">
+                                            <span>Contact Details<span>
+                                        </div>
+                                        <div class="contactInfoDiv1 d-flex my-3">
+                                            <div class="pe-2">
+                                                <span>Address*</span><br>
+                                                <input type="text" name="address" id="address" placeholder="Your Address"><br>
+                                                <span class="text-danger fs-6" id="errorAddress"></span>
+                                            </div>
+                                            <div>
+                                                <span>Street*</span><br>
+                                                <input type="text" name="street" id="street" placeholder="Your Street"><br>
+                                                <span class="text-danger fs-6" id="errorStreet"></span>
+                                            </div>
+                                        </div>
+                                        <div class="contactInfoDiv2 d-flex my-3">
+                                            <div class="pe-2">
+                                                <span>District*</span><br>
+                                                <input type="text" name="district" id="district" placeholder="Your District"><br>
+                                                <span class="text-danger fs-6" id="errorDistrict"></span>
+                                            </div>
+                                            <div>
+                                                <span>State*</span><br>
+                                                <input type="text" name="state" id="state" placeholder="Your State"><br>
+                                                <span class="text-danger fs-6" id="errorState"></span>
+                                            </div>
+                                        </div>
+                                        <div class="contactInfoDiv3 d-flex my-3">
+                                            <div class="pe-2">
+                                                <span>Country*</span><br>
+                                                <input type="text" name="country" id="country" placeholder="Your Country"><br>
+                                                <span class="text-danger fs-6" id="errorCountry"></span>
+                                            </div>
+                                            <div>
+                                                <span>Pincode*</span><br>
+                                                <input type="text" name="pincode" id="pincode" placeholder="Your Pincode"><br>
+                                                <span class="text-danger fs-6" id="errorPincode"></span>
+                                            </div>
+                                        </div>
+                                        <div class="contactInfoDiv4 d-flex my-3">
+                                            <div class="pe-2">
+                                                <span>Email Id*</span><br>
+                                                <input type="email" name="emailId" id="emailId" placeholder="Your Email Id"><br>
+                                                <span class="text-danger fs-6" id="errorEmail"></span>
+                                            </div>
+                                            <div>
+                                                <span>Phone Number*</span><br>
+                                                <input type="text" name="phoneNo" id="phoneNo" placeholder="Your Phone Number"><br>
+                                                <span class="text-danger fs-6" id="errorPhoneNo"></span>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="modalEditBtn" data-bs-dismiss="modal">Close</button>
+                                            <input type="hidden" value="add" id="addContactHidden" name="addContactHidden">
+                                            <button type="submit" onclick="funModalVal(event)" value=""  id="addContact" name="addContact" class="modalEditBtn">Save</button>
+                                        </div>
                                     </div>
 
-                                    <div class="modalEditSubHeading my-3">
-                                        <span>Contact Details<span>
-                                    </div>
-                                    <div class="contactInfoDiv1 d-flex my-3">
-                                        <div class="pe-2">
-                                            <span>Address*</span><br>
-                                            <input type="text" name="address" id="address" placeholder="Your Address"><br>
-                                            <span class="text-danger fs-6" id="errorAddress"></span>
+                                    <div class="modalEditRightBox ps-4 pt-5">
+                                        <div class="userImageDiv border bg-white mt-5">
+                                            <img src="Assets/Images/user.png" class="rounded-circle" id="editModalImage" alt="No image found">
                                         </div>
-                                        <div>
-                                            <span>Street*</span><br>
-                                            <input type="text" name="street" id="street" placeholder="Your Street"><br>
-                                            <span class="text-danger fs-6" id="errorStreet"></span>
-                                        </div>
-                                    </div>
-                                    <div class="contactInfoDiv2 d-flex my-3">
-                                        <div class="pe-2">
-                                            <span>District*</span><br>
-                                            <input type="text" name="district" id="district" placeholder="Your District"><br>
-                                            <span class="text-danger fs-6" id="errorDistrict"></span>
-                                        </div>
-                                        <div>
-                                            <span>State*</span><br>
-                                            <input type="text" name="state" id="state" placeholder="Your State"><br>
-                                            <span class="text-danger fs-6" id="errorState"></span>
-                                        </div>
-                                    </div>
-                                    <div class="contactInfoDiv3 d-flex my-3">
-                                        <div class="pe-2">
-                                            <span>Country*</span><br>
-                                            <input type="text" name="country" id="country" placeholder="Your Country"><br>
-                                            <span class="text-danger fs-6" id="errorCountry"></span>
-                                        </div>
-                                        <div>
-                                            <span>Pincode*</span><br>
-                                            <input type="text" name="pincode" id="pincode" placeholder="Your Pincode"><br>
-                                            <span class="text-danger fs-6" id="errorPincode"></span>
-                                        </div>
-                                    </div>
-                                    <div class="contactInfoDiv4 d-flex my-3">
-                                        <div class="pe-2">
-                                            <span>Email Id*</span><br>
-                                            <input type="email" name="emailId" id="emailId" placeholder="Your Email Id"><br>
-                                            <span class="text-danger fs-6" id="errorEmail"></span>
-                                        </div>
-                                        <div>
-                                            <span>Phone Number*</span><br>
-                                            <input type="text" name="phoneNo" id="phoneNo" placeholder="Your Phone Number"><br>
-                                            <span class="text-danger fs-6" id="errorPhoneNo"></span>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="modalEditBtn" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" onclick="funModalVal(event)" class="modalEditBtn">Save changes</button>
                                     </div>
                                 </div>
-
-                                <div class="modalEditRightBox ps-4 pt-5">
-                                    <div class="userImageDiv border bg-white mt-5">
-                                        <img src="Assets/Images/user.png" class="rounded-circle" alt="No image found">
-                                    </div>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -205,43 +218,49 @@
                             <div class="d-flex">
                                 <div class="modalEditLeftBox bg-white p-5">
                                     <div class="modalEditHeading p-2 my-2 text-center">
-                                        <span>CREATE  CONTACT<span>
+                                        <span>CONTACT DETAILS<span>
                                     </div>
                                     <div class="contactDetailsDisplay">
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Name</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">User Name</div>
+                                            <div class="userDetails"><span id="userNameView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Gender</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">Male</div>
+                                            <div class="userDetails"><span id="genderView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Date of Birth</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">12-05-2002</div>
+                                            <div class="userDetails"><span id="dobView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Address</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails"><span>gdsalkgewfbbfeLWIGLHWBEF,JBB LAGBHBLGGG,EBG,B</span></div>
+                                            <div class="userDetails">
+                                                <span id="addressView"></span>,
+                                                <span id="streetView"></span>,
+                                                <span id="stateView"></span>,
+                                                <span id="districtView"></span>,
+                                                <span id="countryView"></span>
+                                            </div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Pincode</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">7653236</div>
+                                            <div class="userDetails"><span id="pincodeView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Email Id</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">aaa@lkj.com</div>
+                                            <div class="userDetails"><span id="emailIdView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Phone</div>
                                             <div class="middle">:</div>
-                                            <div class="userDetails">876324864634</div>
+                                            <div class="userDetails"><span id="phoneNoView"></span></div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -250,7 +269,7 @@
                                 </div>
                                 <div class="modalEditRightBox ps-4 pt-5">
                                     <div class="userImageDivView border bg-white mt-5">
-                                        <img src="Assets/Images/user.png" class="" alt="No image found">
+                                        <img src="Assets/Images/user.png" id="userContactImage" class="" alt="No image found">
                                     </div>
                                 </div>
                             </div>
@@ -258,10 +277,54 @@
                     </div>
                 </div>
                 <!--Modal View End-->
-            </form>
+            </div>
         </div>
+<!---  Add contact CF        --->
+        <cfoutput>
+            <cfif structKeyExists(form, "addContact")>
 
-        <cfdump  var="#session#">
+                <cfif "#form.addContactHidden#" == "add">
+
+                    <cfif  len(form.contactImage) GT 1>
+                        <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
+                        </cffile>
+                        <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                    <cfelse>
+                        <cfset local.imagePath = "Assets\Images\user.png">
+                    </cfif>
+
+                    <cfloop collection="#form#" item="item">
+                        <cfset local.structContactInfo[item] = form[item]>
+                    </cfloop>
+                    <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
+
+                    <cfset local.obj = createObject("component", "components.addressBook")>
+                    <cfset local.result = local.obj.addContact(local.structContactInfo)>
+
+                </cfif>
+
+                <cfif "#form.addContactHidden#" == "edit">
+
+                    <cfif  len(form.contactImage) GT 1>
+                        <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
+                        </cffile>
+                        <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                    <cfelse>
+                        <cfset local.imagePath = "#form.imgHidden#">
+                    </cfif>
+
+                    <cfloop collection="#form#" item="item">
+                        <cfset local.structContactInfo[item] = form[item]>
+                    </cfloop>
+                    <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
+                     
+                     <cfset local.obj = createObject("component", "components.addressBook")>
+                    <cfset local.result = local.obj.editContact(local.structContactInfo)>
+
+                </cfif>
+            </cfif>
+        </cfoutput>
+
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>    
