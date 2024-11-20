@@ -9,3 +9,20 @@
             <cfqueryparam value="#structUserInfo["userImage"]#" cfsqltype=cf_sql_varchar>
             )
         </cfquery>
+
+
+
+<cfset local.obj = createObject("component", "components.addressBook")>
+            <cfset local.result = local.obj.addContact(local.structContactInfo)>
+
+
+
+	
+
+            <cfset local.obj = createObject("component", "components.addressBook")>
+            <cfset local.result = local.obj.addContact(local.structContactInfo)>
+            <cfdump  var="#local.result#">
+
+
+
+	

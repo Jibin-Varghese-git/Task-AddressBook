@@ -29,7 +29,7 @@
                             <span class="loginHeading">LOGIN</span>
                             <input type="text" class="userName" name="userName" placeholder="User Name">
                             <input type="password" class="password" name="password" placeholder="Password">
-                            <button class="registerButton" name="login">LOGIN</button>
+                            <button type="Submit" class="registerButton" name="login">LOGIN</button>
                              <div>
                                 <span class="textLogin p-3">Or Sign In Using</span>
                                 <div class="d-flex p-2">
