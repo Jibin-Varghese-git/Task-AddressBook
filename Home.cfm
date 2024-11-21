@@ -4,11 +4,7 @@
         <link rel="stylesheet" href="css/style.css">
         <script src="js/script.js"></script>
     </head>
-
     <body>
-        <cfif NOT structKeyExists(session, "structUserDetails")>
-            <cflocation  url="Login.cfm" addToken="no">
-        </cfif>
         <div>
             <div>
                 <header class="py-2 px-5 d-flex justify-content-between">
@@ -25,9 +21,9 @@
 
                     <div class="contentTopBox  bg-white pe-5 py-3">
                         <div class=" d-flex justify-content-end">
-                            <a><img src="Assets/Images/pdf.png" class="mx-2" alt="No image found" height="35" width="35"></a>
-                            <a><img src="Assets/Images/excel.png" class="mx-2" alt="No image found" height="35" width="35"></a>
-                            <a><img src="Assets/Images/printer.png" class="mx-2" alt="No image found" height="35" width="35"></a>
+                            <a href="check.cfm"><img src="Assets/Images/pdf.png" class="mx-2" alt="No image found" height="35" width="35"></a>
+                            <button class="printBtn" onclick="funXls()"><img src="Assets/Images/excel.png" class="mx-2" alt="No image found" height="35" width="35"></button>
+                            <button class="printBtn" onclick="funPrint()"><img src="Assets/Images/printer.png" class="mx-2" alt="No image found" height="35" width="35"></button>
                         </div>
                     </div>
                     <cfoutput>
@@ -42,7 +38,7 @@
                                 <button type="button" class="createContactBtn mt-3 py-2" onclick="funCreateContact()" data-bs-toggle="modal" data-bs-target="##modalEdit">CREATE CONTACT</button>
                             </div>
 
-                            <div class="contentBoxRight bg-white p-2">
+                            <div class="contentBoxRight bg-white p-2" id="contentBoxRight">
 
                                 <div class="contactsHeading d-flex p-3">
                                     <div class="nameHeading ps-5">
@@ -73,9 +69,9 @@
                                                 <div class="contactPhnNo">#local.qryReadContact.phoneNo#</div>
                                             </div>
                                             <div class="contactButtons d-flex justify-content-around ms-4">
-                                                <button type="button" value="#local.qryReadContact.contactId#" onclick="funEditContact(this)" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
-                                                <button value="#local.qryReadContact.contactId#" onclick="funDelete(this)">DELETE</button>
-                                                <button type="button" value="#local.qryReadContact.contactId#" onclick="funViewContact(this)" data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
+                                                <button  class="contactBtnClass" type="button" value="#local.qryReadContact.contactId#" onclick="funEditContact(this)" id="editBtn" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
+                                                <button class="contactBtnClass" value="#local.qryReadContact.contactId#" onclick="funDelete(this)" id="deleteBtn">DELETE</button>
+                                                <button class="contactBtnClass" type="button" value="#local.qryReadContact.contactId#" id="viewBtn" onclick="funViewContact(this)" data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
                                             </div>
                                         </div>
 
@@ -89,7 +85,7 @@
                 <div class="modal fade" id="modalEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modalEditBox modal-content">
-                            <form method="post" enctype="multipart/form-data" id="createForm">
+                            <form method="post" enctype="multipart/form-data" id="createForm" onsubmit="pageReload()">
                                 <div class="d-flex">
                                     <div class="modalEditLeftBox bg-white p-5">
                                         <div class="modalEditHeading p-2 my-2 text-center">
@@ -194,9 +190,9 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="modalEditBtn" data-bs-dismiss="modal">Close</button>
-                                            <input type="hidden" value="add" id="addContactHidden" name="addContactHidden">
-                                            <button type="submit" onclick="funModalVal(event)" value=""  id="addContact" name="addContact" class="modalEditBtn">Save</button>
+                                            <button type="button" class="modalEditBtn" onclick="funClose()" data-bs-dismiss="modal">Close</button>
+                                            <input type="hidden" value="" id="addContactHidden" name="addContactHidden">
+                                            <button type="submit" onclick="funModalVal(event)"  value=""  id="addContact" name="addContact" class="modalEditBtn">Save</button>
                                         </div>
                                     </div>
 
@@ -283,7 +279,7 @@
         <cfoutput>
             <cfif structKeyExists(form, "addContact")>
 
-                <cfif "#form.addContactHidden#" == "add">
+                <cfif Len(form.addContactHidden) LT 1>
 
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
@@ -300,10 +296,18 @@
 
                     <cfset local.obj = createObject("component", "components.addressBook")>
                     <cfset local.result = local.obj.addContact(local.structContactInfo)>
-
+                    <cfif local.result == "error">
+                        <h2 class="text-danger">Phone Number  Already Exists</h2>
+                    <cfelseif local.result == "error1">
+                        <h2 class="text-danger">Email Id  Already Exists</h2>
+                    <cfelse>
+                        <cflocation  url="Home.cfm" addToken="no">
+                    </cfif>
+                    
+                    
                 </cfif>
 
-                <cfif "#form.addContactHidden#" == "edit">
+                <cfif Len(form.addContactHidden) GT 0>
 
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
@@ -318,13 +322,18 @@
                     </cfloop>
                     <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
                      
-                     <cfset local.obj = createObject("component", "components.addressBook")>
+                    <cfset local.obj = createObject("component", "components.addressBook")>
                     <cfset local.result = local.obj.editContact(local.structContactInfo)>
+                    <cfif local.result == "error">
+                        <h2 class="text-danger">Phone Number  Already Exists</h2>
+                    <cfelse>
+                        <cflocation  url="Home.cfm" addToken="no">
+                    </cfif>
 
                 </cfif>
             </cfif>
         </cfoutput>
-
+        <cfdump  var="#session#">
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>    

@@ -286,6 +286,22 @@ function funModalVal(event){
     
 }
 
+function funClose(){
+    document.getElementById("errorTitle").innerHTML="";
+    document.getElementById("errorFname").innerHTML="";
+    document.getElementById("errorLname").innerHTML="";
+    document.getElementById("errorGender").innerHTML="";
+    document.getElementById("errorDob").innerHTML="";
+    document.getElementById("errorAddress").innerHTML="";
+    document.getElementById("errorStreet").innerHTML="";
+    document.getElementById("errorDistrict").innerHTML="";
+    document.getElementById("errorState").innerHTML="";
+    document.getElementById("errorCountry").innerHTML="";
+    document.getElementById("errorPincode").innerHTML="";
+    document.getElementById("errorEmail").innerHTML="";
+    document.getElementById("errorPhoneNo").innerHTML="";
+}
+
 function funDelete(contactId){
     if(confirm("Do you want to Delete this  Contact?"))
         {
@@ -368,8 +384,8 @@ function funEditContact(contactId){
                     document.getElementById("emailId").value= structContactUser.emailId;
                     document.getElementById("phoneNo").value= structContactUser.phoneNo;
                     document.getElementById("editModalImage").src= structContactUser.contactImage;
-                    document.getElementById("addContactHidden").value= "edit";
-                    document.getElementById("addContact").value= structContactUser.contactId;
+                    document.getElementById("addContactHidden").value= structContactUser.contactId;
+                    
 
                 }
                 else
@@ -385,3 +401,36 @@ function funCreateContact(){
     document.getElementById("editModalImage").src= "Assets/Images/user.png";
     document.getElementById("createForm").reset();
 }
+
+// function pageReload(){
+   
+//     location.reload();
+// }
+
+function funPrint(){
+    var printContents = document.getElementById("contentBoxRight").innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    $(".contactBtnClass").css({"display":"none"})
+
+    window.print();
+    document.body.innerHTML = originalContents;
+}
+
+function funXls()
+{
+    alert("hello")
+    $.ajax({
+        method : "GET",
+        url : "components/addressBook.cfc?method=spreadsheetDownload",
+        success : function(result){
+            if(result)
+            {
+                alert("Data Saved")
+            }
+
+        }
+    });
+}
+
