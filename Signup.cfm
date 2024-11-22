@@ -14,8 +14,8 @@
                         <span class="text-white">ADDRESS BOOK</span>
                     </div>
                     <div class="headerButtons">
-                        <button class="text-white"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</button>
-                        <button class="text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</button>
+                        <a href="Signup.cfm" class="text-decoration-none text-white me-2"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</a>
+                        <a href="Login.cfm" class="text-decoration-none text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</a>
                     </div>
                 </header>
 
@@ -54,8 +54,8 @@
                                     <cfset local.structUserInfo[item] = trim(form[item])>
                                 </cfloop>
                                 <cfset local.structUserInfo["imagePath"] = local.imagePath>
-                                <cfset local.obj = createObject("component", "components.addressBook")>
-                                <cfset local.result = local.obj.signUpInput(local.structUserInfo)>
+<!---                                 <cfset local.obj = createObject("component", "components.addressBook")> --->
+                                <cfset local.result = application.obj.signUpInput(local.structUserInfo)>
                                 <cfoutput>
                                     <span class="fw-bold bg-success text-white">#local.result#</span>
                                 </cfoutput>

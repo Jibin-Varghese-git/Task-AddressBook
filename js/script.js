@@ -359,6 +359,7 @@ function funViewContact(contactId){
 }
 
 function funEditContact(contactId){
+    document.getElementById("createForm").reset();
     $.ajax({
         type : "GET",
         url : "components/addressBook.cfc?method=selectContact",
@@ -366,8 +367,7 @@ function funEditContact(contactId){
         success:function(result){
                 if(result)
                 {
-                    structContactUser=JSON.parse(result)
-                    alert(structContactUser.title)
+                    structContactUser=JSON.parse(result)  
                     document.getElementById("modalHeading").innerHTML= "EDIT CONTACT"
                     document.getElementById("contactTitle").value= structContactUser.title;
                     document.getElementById("firstName").value= structContactUser.firstName;
@@ -410,27 +410,39 @@ function funCreateContact(){
 function funPrint(){
     var printContents = document.getElementById("contentBoxRight").innerHTML;
     var originalContents = document.body.innerHTML;
-
     document.body.innerHTML = printContents;
-    $(".contactBtnClass").css({"display":"none"})
-
+    $(".contactBtnClass").css({"display":"none"});
     window.print();
+   alert("hello")
     document.body.innerHTML = originalContents;
 }
 
 function funXls()
 {
-    alert("hello")
-    $.ajax({
-        method : "GET",
-        url : "components/addressBook.cfc?method=spreadsheetDownload",
-        success : function(result){
-            if(result)
-            {
-                alert("Data Saved")
-            }
+    if(confirm("Do you want to download"))
+    {
+        $.ajax({
+            method : "GET",
+            url : "components/addressBook.cfc?method=spreadsheetDownload",
+            success : function(result){
+                if(result)
+                {
+                    alert("Data Saved")
+                }
 
-        }
-    });
+            }
+        });
+    } 
+}
+
+function funPdf(){
+    if(confirm("Do you want to download PDF"))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
