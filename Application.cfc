@@ -2,6 +2,7 @@
 
     <cfset this.datasource="dataSource_addressBook">
     <cfset this.sessionmanagement = "true">
+    <cfset application.obj = createObject("component", "components.addressBook")>
 
     <cffunction  name="onrequest" returntype="any">
         <cfargument name="requestpage">

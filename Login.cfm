@@ -6,15 +6,15 @@
 
     <body>
         <div>
-            <form method="post">
+            <form method="post" >
                 <header class="py-2 px-5 d-flex justify-content-between">
                     <div class="">
                         <img src="Assets/Images/addressBook.png" alt="No image found" height="35" width="35">
                         <span class="text-white">ADDRESS BOOK</span>
                     </div>
                     <div class="headerButtons">
-                        <button class="text-white"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</button>
-                        <button class="text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</button>
+                        <a href="Signup.cfm" class="text-decoration-none text-white"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</a>
+                        <a href="Login.cfm" class="text-decoration-none text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</a>
                     </div>
                 </header>
 
@@ -37,15 +37,15 @@
                                     <a><img src="Assets/Images/Google.png" class="" alt="No image found" height="60" width="60"></a>
                                 </div>
                             </div>
-                            <span class="textLogin">Already have an account? <a class="text-decoration-none" href="SignUp.cfm">Register Here</a></span>
+                            <span class="textLogin">Already have an account? <a class="text-decoration-none" href="Signup.cfm">Register Here</a></span>
                         </div>
 
                     </div>                   
                </div>
             </form>
             <cfif structKeyExists(form, "login")>
-                <cfset local.obj = createObject("component", "components.addressBook")>
-                <cfset local.result = local.obj.userLogin(form.userName,form.password)>
+<!---                 <cfset local.obj = createObject("component", "components.addressBook")> --->
+                <cfset local.result = application.obj.userLogin(form.userName,form.password)>
                 <cfif local.result>
                     <cflocation  url="Home.cfm" addToken="no">
                 <cfelse>

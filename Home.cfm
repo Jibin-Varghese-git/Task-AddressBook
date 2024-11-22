@@ -20,11 +20,14 @@
                 <div class="contentConatainer d-flex flex-column">
 
                     <div class="contentTopBox  bg-white pe-5 py-3">
-                        <div class=" d-flex justify-content-end">
-                            <a href="check.cfm"><img src="Assets/Images/pdf.png" class="mx-2" alt="No image found" height="35" width="35"></a>
-                            <button class="printBtn" onclick="funXls()"><img src="Assets/Images/excel.png" class="mx-2" alt="No image found" height="35" width="35"></button>
-                            <button class="printBtn" onclick="funPrint()"><img src="Assets/Images/printer.png" class="mx-2" alt="No image found" height="35" width="35"></button>
-                        </div>
+                        
+                            <div class=" d-flex justify-content-end">
+                                <form method="post">
+                                    <button  class="topBtn" id="pdfBtn" name="pdfBtn" onclick="return funPdf()"><img src="Assets/Images/pdf.png" class="mx-2" alt="No image found" height="35" width="35"></button>
+                                    <button type="button" class="topBtn" onclick="funXls()"><img src="Assets/Images/excel.png" class="mx-2" alt="No image found" height="35" width="35"></button>
+                                    <button type="submit" class="topBtn"  onclick="funPrint()"><img src="Assets/Images/printer.png" class="mx-2" alt="No image found" height="35" width="35"></button>
+                                </form>
+                            </div>
                     </div>
                     <cfoutput>
                    
@@ -53,8 +56,8 @@
                                 </div>
 
                                 <!--- Contact --->
-                                <cfset local.obj = createObject("component", "components.addressBook")>
-                                <cfset local.qryReadContact = local.obj.readContact()>
+<!---                           <cfset local.obj = createObject("component", "components.addressBook")> --->
+                                <cfset local.qryReadContact = application.obj.readContact()>
 
                                 <cfoutput>
                                     <cfloop query="local.qryReadContact">
@@ -269,13 +272,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>  ////
                     </div>
                 </div>
                 <!--Modal View End-->
             </div>
         </div>
-<!---  Add contact CF        --->
+<!---       Add contact CF        --->
         <cfoutput>
             <cfif structKeyExists(form, "addContact")>
 
@@ -284,9 +287,9 @@
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                         </cffile>
-                        <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                        <cfset local.imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
                     <cfelse>
-                        <cfset local.imagePath = "Assets\Images\user.png">
+                        <cfset local.imagePath = "Assets/Images/user.png">
                     </cfif>
 
                     <cfloop collection="#form#" item="item">
@@ -294,12 +297,14 @@
                     </cfloop>
                     <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
 
-                    <cfset local.obj = createObject("component", "components.addressBook")>
-                    <cfset local.result = local.obj.addContact(local.structContactInfo)>
+<!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
+                    <cfset local.result = application.obj.addContact(local.structContactInfo)>
                     <cfif local.result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
                     <cfelseif local.result == "error1">
                         <h2 class="text-danger">Email Id  Already Exists</h2>
+                    <cfelseif local.result == "error2">
+                        <h2 class="text-danger">Email Id  cannot use</h2>
                     <cfelse>
                         <cflocation  url="Home.cfm" addToken="no">
                     </cfif>
@@ -312,7 +317,7 @@
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                         </cffile>
-                        <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                        <cfset local.imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
                     <cfelse>
                         <cfset local.imagePath = "#form.imgHidden#">
                     </cfif>
@@ -322,19 +327,62 @@
                     </cfloop>
                     <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
                      
-                    <cfset local.obj = createObject("component", "components.addressBook")>
-                    <cfset local.result = local.obj.editContact(local.structContactInfo)>
+<!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
+                    <cfset local.result = application.obj.editContact(local.structContactInfo)>
                     <cfif local.result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
+                    <cfelseif local.result == "error1">
+                        <h2 class="text-danger">Email Id  Already Exists</h2>
+                    <cfelseif local.result == "error2">
+                        <h2 class="text-danger">Email Id  cannot use</h2>
                     <cfelse>
                         <cflocation  url="Home.cfm" addToken="no">
                     </cfif>
 
                 </cfif>
             </cfif>
+
+            <cfif structKeyExists(form, "pdfBtn")>
+            
+               <cfdocument  format="PDF">  
+                    <table style="border-spacing:30px" border="2">
+                        <tr>
+                            <th>
+                                <h6 class="contactHeadingSpan" style="">PROFILE IMAGE<h6>
+                            </th>
+                            <th>
+                                <h6 class="contactHeadingSpan" style="">NAME<h6>
+                            </th>
+                            <th>
+                                <h6 class="contactHeadingSpan" style="">EMAIL ID<h6>
+                            </th>
+                            <th>
+                                <h6 class="contactHeadingSpan">PHONE NUMBER<h6>
+                            </th>
+                        </tr>
+                
+                        <!--- Contact --->
+<!---                   <cfset local.obj = createObject("component", "components.addressBook")> --->
+                        <cfset local.qryReadContact = application.obj.readContact()>
+                            <cfloop query="local.qryReadContact">
+                                <tr>
+                                    <td>
+                                   
+                                        <img src="#local.qryReadContact.contactImage#"  alt="No image found" width="50" height="50">
+                                    </td>
+                                    <td>#local.qryReadContact.firstname# #local.qryReadContact.lastname#</td>
+                                    <td>#local.qryReadContact.emailId#</td>
+                                    <td>#local.qryReadContact.phoneNo#</td>
+                                </tr>
+                            </cfloop>
+                    </table>
+                </cfdocument>
+
+            </cfif>
+
         </cfoutput>
-        <cfdump  var="#session#">
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>    
 </html>
