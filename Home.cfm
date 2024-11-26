@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
         <script src="js/script.js"></script>
     </head>

@@ -413,7 +413,6 @@ function funPrint(){
     document.body.innerHTML = printContents;
     $(".contactBtnClass").css({"display":"none"});
     window.print();
-   alert("hello")
     document.body.innerHTML = originalContents;
 }
 

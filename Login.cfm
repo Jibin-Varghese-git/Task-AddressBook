@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
     </head>
 
@@ -14,7 +14,6 @@
                     </div>
                     <div class="headerButtons">
                         <a href="Signup.cfm" class="text-decoration-none text-white"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</a>
-                        <a href="Login.cfm" class="text-decoration-none text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</a>
                     </div>
                 </header>
 
@@ -34,7 +33,7 @@
                                 <span class="textLogin p-3">Or Sign In Using</span>
                                 <div class="d-flex p-2">
                                     <a><img src="Assets/Images/facebook.png" class="me-2" alt="No image found" height="60" width="60"></a>
-                                    <a><img src="Assets/Images/Google.png" class="" alt="No image found" height="60" width="60"></a>
+                                    <button class="ssoBtns" name="googleBtn"><img src="Assets/Images/Google.png" class="" alt="No image found" height="60" width="60"></button>
                                 </div>
                             </div>
                             <span class="textLogin">Already have an account? <a class="text-decoration-none" href="Signup.cfm">Register Here</a></span>
@@ -43,6 +42,12 @@
                     </div>                   
                </div>
             </form>
+            <cfif structKeyExists(form, "googleBtn")>
+                <cfset local.result = application.obj.userGoogleLogin()>
+                <cfset session.code= url.code>
+                <cfset session.scope= url.scope>
+            </cfif>
+            
             <cfif structKeyExists(form, "login")>
 <!---                 <cfset local.obj = createObject("component", "components.addressBook")> --->
                 <cfset local.result = application.obj.userLogin(form.userName,form.password)>
@@ -52,6 +57,7 @@
                     <span class="fw-bold text-danger">Invalid User Name and Password</span>
                 </cfif>
             </cfif>
+            <cfdump  var="#session#">
         </div>
     </body>    
 </html>
