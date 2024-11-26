@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
         <script src="js/script.js"></script>
     </head>
@@ -14,7 +14,6 @@
                         <span class="text-white">ADDRESS BOOK</span>
                     </div>
                     <div class="headerButtons">
-                        <a href="Signup.cfm" class="text-decoration-none text-white me-2"> <img src="Assets/Images/signup.png" alt="No image found" height="18" width="18" class="mb-2 me-1">Sign Up</a>
                         <a href="Login.cfm" class="text-decoration-none text-white"><img src="Assets/Images/login_icon.png" alt="No image found" height="15" width="18" class="mb-1 me-1">Login</a>
                     </div>
                 </header>

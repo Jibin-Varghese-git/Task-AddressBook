@@ -364,5 +364,12 @@
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
         <cfreturn true>
     </cffunction>
+    <cffunction  name="userGoogleLogin">
+        <cfoauth  Type="google"
+                   
+                    result="result"  
+                    redirecturi="">
+                    
+    </cffunction>
 
 </cfcomponent>
