@@ -33,7 +33,7 @@
                                 <span class="textLogin p-3">Or Sign In Using</span>
                                 <div class="d-flex p-2">
                                     <a><img src="Assets/Images/facebook.png" class="me-2" alt="No image found" height="60" width="60"></a>
-                                    <button class="ssoBtns" name="googleBtn"><img src="Assets/Images/Google.png" class="" alt="No image found" height="60" width="60"></button>
+                                    <a href="googleDummy.cfm"><img src="Assets/Images/Google.png" class="" alt="No image found" height="60" width="60"></a>
                                 </div>
                             </div>
                             <span class="textLogin">Already have an account? <a class="text-decoration-none" href="Signup.cfm">Register Here</a></span>
@@ -41,13 +41,17 @@
 
                     </div>                   
                </div>
+               
             </form>
-            <cfif structKeyExists(form, "googleBtn")>
-                <cfset local.result = application.obj.userGoogleLogin()>
-                <cfset session.code= url.code>
-                <cfset session.scope= url.scope>
-            </cfif>
+
             
+            
+            <cfif structKeyExists(session, "googleInfo")>
+                 <cflocation  url="googleDummy.cfm">
+            </cfif>
+          
+
+         
             <cfif structKeyExists(form, "login")>
 <!---                 <cfset local.obj = createObject("component", "components.addressBook")> --->
                 <cfset local.result = application.obj.userLogin(form.userName,form.password)>
@@ -57,7 +61,7 @@
                     <span class="fw-bold text-danger">Invalid User Name and Password</span>
                 </cfif>
             </cfif>
-            <cfdump  var="#session#">
+            
         </div>
     </body>    
 </html>

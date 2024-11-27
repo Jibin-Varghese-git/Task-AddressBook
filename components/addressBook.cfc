@@ -28,11 +28,11 @@
                     ,userImage
                     )
                 VALUES (
-                    < cfqueryparam value = "#structUserInfo[" fullName "]#" cfsqltype = cf_sql_varchar >
-                    ,< cfqueryparam value = "#structUserInfo[" emailId "]#" cfsqltype = cf_sql_varchar >
-                    ,< cfqueryparam value = "#structUserInfo[" userName "]#" cfsqltype = cf_sql_varchar >
-                    ,< cfqueryparam value = "#structUserInfo[" password "]#" cfsqltype = cf_sql_varchar >
-                    ,< cfqueryparam value = "#structUserInfo[" imagePath "]#" cfsqltype = cf_sql_varchar >
+                    < cfqueryparam value = "#structUserInfo["fullName"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#structUserInfo["emailId"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#structUserInfo["userName"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#structUserInfo["password"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#structUserInfo["imagePath"]#" cfsqltype = cf_sql_varchar >
                     )
             </cfquery>
 
@@ -364,12 +364,73 @@
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
         <cfreturn true>
     </cffunction>
-    <cffunction  name="userGoogleLogin">
-        <cfoauth  Type="google"
-                   
-                    result="result"  
-                    redirecturi="">
-                    
+    
+<!--- Insert  Google User--->
+    <cffunction  name="insertGoogleUser">
+        <cfargument  name="structGoogleUser" type="struct">
+
+        <cfquery name="qryCheckEmail">
+            SELECT COUNT(emailId) 
+            AS emailCount 
+            FROM userInfo 
+            WHERE emailId = <cfqueryparam value="#arguments.structGoogleUser["email"]#" cfsqltype="cf_sql_varchar"> 
+        </cfquery>
+
+        <cfif qryCheckEmail.emailCount EQ 1>
+
+            <cfquery name="qrySelectUser">
+                SELECT userId,
+                       fullName,
+                       userName,
+                       userImage,
+                       emailId 
+                FROM userInfo
+                WHERE emailId=<cfqueryparam value="#arguments.structGoogleUser["email"]#" cfsqltype="cf_sql_varchar">
+            </cfquery>
+
+            <cfset session.structUserDetails["userId"] = qrySelectUser.userId>
+            <cfset session.structUserDetails["fullName"] = qrySelectUser.fullName>
+            <cfset session.structUserDetails["userName"] = qrySelectUser.userName>
+            <cfset session.structUserDetails["userImage"] = qrySelectUser.userImage>
+            <cfset session.structUserDetails["emailId"] = qrySelectUser.emailId>
+            <cflocation  url="Home.cfm">
+
+        <cfelse>
+                <cfquery name="qryUserSignUp">
+                INSERT INTO userInfo (
+                    fullName
+                    ,emailId
+                    ,userName
+                    ,userImage
+                    ,loginType
+                    )
+                VALUES (
+                    < cfqueryparam value = "#arguments.structGoogleUser["fullName"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#arguments.structGoogleUser["email"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#arguments.structGoogleUser["userName"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "#arguments.structGoogleUser["imagePath"]#" cfsqltype = cf_sql_varchar >
+                    ,< cfqueryparam value = "SSO" cfsqltype = cf_sql_varchar >
+                    )
+            </cfquery>
+
+            <cfquery name="qrySelectUser">
+                SELECT userId,
+                       fullName,
+                       userName,
+                       userImage,
+                       emailId 
+                FROM userInfo
+                WHERE emailId=<cfqueryparam value="#arguments.structGoogleUser["email"]#" cfsqltype="cf_sql_varchar">
+            </cfquery>
+
+            <cfset session.structUserDetails["userId"] = qrySelectUser.userId>
+            <cfset session.structUserDetails["fullName"] = qrySelectUser.fullName>
+            <cfset session.structUserDetails["userName"] = qrySelectUser.userName>
+            <cfset session.structUserDetails["userImage"] = qrySelectUser.userImage>
+            <cfset session.structUserDetails["emailId"] = qrySelectUser.emailId>
+            <cflocation  url="Home.cfm">
+
+        </cfif>
     </cffunction>
 
 </cfcomponent>
