@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../bootstrap-5.3.3-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
         <script src="js/script.js"></script>
     </head>
@@ -285,7 +285,7 @@
                 <cfif Len(form.addContactHidden) LT 1>
 
                     <cfif  len(form.contactImage) GT 1>
-                        <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
+                        <cffile  action="upload" destination="#expandpath("Assets/Images")#" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                         </cffile>
                         <cfset local.imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
                     <cfelse>
