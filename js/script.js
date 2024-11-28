@@ -445,3 +445,21 @@ function funPdf(){
     }
 }
 
+// function funValLogin(event){
+//     let userName=document.getElementById("userName").value;
+//     let password=document.getElementById("password").value;
+//     alert()
+//     if(userName.length == 0)
+//     {
+//         document.getElementById("errorUserName").innerHTML="Enter the email id";
+//         event.preventDefault();
+//     }
+
+//     if(password.length == 0)
+//     {
+//         document.getElementById("errorPassword").innerHTML="Enter password";
+//         event.preventDefault();
+//     }
+   
+// }
+
