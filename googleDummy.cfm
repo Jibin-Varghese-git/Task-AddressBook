@@ -1,6 +1,6 @@
  <cfif NOT structKeyExists(session, "googleInfo")>
 
-               
+                
 </cfif>
 
 <cfdump  var="#session.googleInfo#">

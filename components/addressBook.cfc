@@ -432,5 +432,11 @@
 
         </cfif>
     </cffunction>
+<!---  Birthday Wish    --->
+    <cffunction  name="birthdayWish">
+        <cfmail  from="jibinvarghese05101999@gmail.com"  subject="Happy Birthday"  to="jibin052001@gmail.com">
+            Happy Birthday
+        </cfmail>
+    </cffunction>
 
 </cfcomponent>

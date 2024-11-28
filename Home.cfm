@@ -57,28 +57,32 @@
 
                                 <!--- Contact --->
 <!---                           <cfset local.obj = createObject("component", "components.addressBook")> --->
-                                <cfset local.qryReadContact = application.obj.readContact()>
-
+<!---                                 <cfset local.qryReadContact = application.obj.readContact()> --->
+                                <cfset  local.qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
+                                <cfset ormReload()>
+<!---                                 <cfdump  var="#local.qryReadContact#"> --->
                                 <cfoutput>
-                                    <cfloop query="local.qryReadContact">
+                                
+                                    <cfloop array="#local.qryReadContact#" item="item">
                                     
                                         <div class="singleContact px-2 py-3 d-flex align-items-center">
                                             <div class="ContactImageDiv">
-                                                <img src="#local.qryReadContact.contactImage#" class="rounded-circle" alt="No image found">
+                                                <img src="#item.getcontactImage()#" class="rounded-circle" alt="No image found">
                                             </div>
                                             <div class="contactDetails p-1 d-flex justify-content-between">
-                                                <div class="contactUserName">#local.qryReadContact.firstname# #local.qryReadContact.lastname#</div>
-                                                <div class="contactUserEmail overflow-hidden">#local.qryReadContact.emailId#</div>
-                                                <div class="contactPhnNo">#local.qryReadContact.phoneNo#</div>
+                                                <div class="contactUserName">#item.getfirstName()# #item.getlastName()#</div>
+                                                <div class="contactUserEmail overflow-hidden">#item.getemailId()#</div>
+                                                <div class="contactPhnNo">#item.getphoneNo()#</div>
                                             </div>
                                             <div class="contactButtons d-flex justify-content-around ms-4">
-                                                <button  class="contactBtnClass" type="button" value="#local.qryReadContact.contactId#" onclick="funEditContact(this)" id="editBtn" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
-                                                <button class="contactBtnClass" value="#local.qryReadContact.contactId#" onclick="funDelete(this)" id="deleteBtn">DELETE</button>
-                                                <button class="contactBtnClass" type="button" value="#local.qryReadContact.contactId#" id="viewBtn" onclick="funViewContact(this)" data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
+                                                <button  class="contactBtnClass" type="button" value="#item.getcontactId()#" onclick="funEditContact(this)" id="editBtn" data-bs-toggle="modal" data-bs-target="##modalEdit">EDIT</button>
+                                                <button class="contactBtnClass" value="#item.getcontactId()#" onclick="funDelete(this)" id="deleteBtn">DELETE</button>
+                                                <button class="contactBtnClass" type="button" value="#item.getcontactId()#" id="viewBtn" onclick="funViewContact(this)" data-bs-toggle="modal" data-bs-target="##modalView">VIEW</button>
                                             </div>
                                         </div>
 
                                     </cfloop>
+                                    
                                 </cfoutput>
                             </div>
                         </div>
