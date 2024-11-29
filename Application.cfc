@@ -8,7 +8,7 @@
 
     <cffunction  name="onrequest" returntype="any">
         <cfargument name="requestpage">
-        <cfset local.arrayExculdes = ["/Login.cfm","/Signup.cfm","/googleDummy.cfm"]>
+        <cfset local.arrayExculdes = ["/Login.cfm","/Signup.cfm","/googleDummy.cfm","/birthdayFunction.cfm"]>
         <cfif arrayContains(local.arrayExculdes,arguments.requestpage)>
             <cfinclude  template="#arguments.requestpage#" >
         <cfelseif structKeyExists(session, "structUserDetails")>
