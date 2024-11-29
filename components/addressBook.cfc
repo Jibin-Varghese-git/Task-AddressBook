@@ -433,10 +433,34 @@
         </cfif>
     </cffunction>
 <!---  Birthday Wish    --->
-    <cffunction  name="birthdayWish">
-        <cfmail  from="jibinvarghese05101999@gmail.com"  subject="Happy Birthday"  to="jibin052001@gmail.com">
-            Happy Birthday
-        </cfmail>
-    </cffunction>
+     <cffunction  name="birthdayWish"> 
+        
+        <cfquery name="qryBday">
+            SELECT firstName
+                   ,lastName
+                   ,dob
+                   ,emailId 
+            FROM contactTable
+        </cfquery>
+
+        <cfset local.today = dateFormat(now(),"dd-mm")>
+        
+        <cfloop query="qryBday">
+            <cfset local.userDob = dateFormat(qryBday.dob,"dd-mm")>
+            <cfdump  var="#local.today#">
+            <cfdump  var="#local.userDob#">
+            <cfif local.today EQ local.userDob> 
+                <cfmail  from="jibinvarghese05101999@gmail.com"  subject="Dummy Mail"  to="#qryBday.emailId#">
+                    jfsj"Khn
+                </cfmail>
+                <cfset local.result =" Email sent ">
+            
+            <cfelse>
+            <cfset local.result =" Email not sent ">
+
+            </cfif>
+        </cfloop>
+        <cfreturn local.result> 
+    </cffunction> 
 
 </cfcomponent>
