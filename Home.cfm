@@ -60,8 +60,7 @@
 <!---                                 <cfset local.qryReadContact = application.obj.readContact()> --->
                                 <cfset ormReload()>
                                 <cfset  local.qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
-                                
-<!---                                 <cfdump  var="#local.qryReadContact#"> --->
+                                 
                                 <cfoutput>
                                 
                                     <cfloop array="#local.qryReadContact#" item="item">
@@ -83,7 +82,7 @@
                                         </div>
 
                                     </cfloop>
-                                    
+                                  
                                 </cfoutput>
                             </div>
                         </div>
