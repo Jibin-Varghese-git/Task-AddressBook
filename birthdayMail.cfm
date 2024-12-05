@@ -1,4 +1,4 @@
-  <cfschedule    
+<!---   <cfschedule  
     action="update"
     task="birthdayWish"
     operation="HTTPRequest"
@@ -7,7 +7,7 @@
     repeat="0"
     interval="Daily" 
     >
-</cfschedule> 
+</cfschedule>    --->
 
 
 

@@ -128,7 +128,7 @@
                         ,_updatedOn
                         )
                     VALUES (
-                        < cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar >
+                         < cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar >
                         ,< cfqueryparam value = "#arguments.structContactinfo["firstName"]#" cfsqltype = cf_sql_varchar >
                         ,< cfqueryparam value = "#arguments.structContactinfo["lastName"]#" cfsqltype = cf_sql_varchar >
                         ,< cfqueryparam value = "#arguments.structContactinfo["gender"]#" cfsqltype = cf_sql_varchar >
@@ -158,16 +158,14 @@
     </cffunction>
 
 <!--- Read Contact --->
-    <cffunction  name="readContact" returntype="query">
+    <cffunction  name="readContact" returntype="query"> 
         
         <cfquery name="qryReadContact">
-            SELECT contactId
-                    ,title
+            SELECT   title
                     ,firstName
                     ,lastName
                     ,gender
                     ,dob
-                    ,contactImage
                     ,address
                     ,street
                     ,district
@@ -176,12 +174,12 @@
                     ,pincode
                     ,emailId
                     ,phoneNo
-            FROM  contactTable 
-            WHERE _createdBy =<cfqueryparam value="#session.structUserDetails["userId"]#" cfsqltype=cf_sql_varchar>
+            FROM contactTable 
+            WHERE _createdBy = <cfqueryparam value="#session.structUserDetails["userId"]#" cfsqltype=cf_sql_varchar>
         </cfquery>
 
         <cfreturn qryReadContact>
-    </cffunction>
+    </cffunction> 
 
 <!---   Delete Contact   --->
     <cffunction  name="deleteContact" returntype="any" access="remote">
@@ -195,7 +193,7 @@
     </cffunction>
 
 <!---   View Contact   --->
-    <cffunction  name="viewContact" returnformat="json" access="remote">
+<!---     <cffunction  name="viewContact" returnformat="json" access="remote"> 
         <cfargument  name="contactId" type="string">
 
         <cfquery name="qrySelectContact">
@@ -233,7 +231,7 @@
         <cfset local.structContactUser["phoneNo"] = qrySelectContact.phoneNo>
         
         <cfreturn local.structContactUser>
-    </cffunction>
+    </cffunction> ---> 
 
 <!---   Select Contact   --->
      <cffunction  name="selectContact" returnformat="json" access="remote">
@@ -336,30 +334,14 @@
 <!---   Read data for spreadsheet   --->
     <cffunction  name="spreadsheetDownload" returntype="any" access="remote">
 
-        <cfquery name="qrySpreadSheet">
-            SELECT   title
-                    ,firstName
-                    ,lastName
-                    ,gender
-                    ,dob
-                    ,address
-                    ,street
-                    ,district
-                    ,state
-                    ,country
-                    ,pincode
-                    ,emailId
-                    ,phoneNo
-            FROM contactTable 
-            WHERE _createdBy = <cfqueryparam value="#session.structUserDetails["userId"]#" cfsqltype=cf_sql_varchar>
-        </cfquery>
+        <cfset local.qryReadContact = readContact()>
 
         <cfset local.fileName = createUUID() & ".xlsx" >
         <cfset  local.theFile= expandPath("../Assets/Docs/"&local.fileName)>
         <cfdump  var="#local.theFile#">
         <cfset local.theSheet = SpreadsheetNew(true)>
         <cfset spreadsheetAddRow(local.theSheet,"Title,First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number")>
-        <cfset spreadsheetAddRows(local.theSheet, qrySpreadSheet)>
+        <cfset spreadsheetAddRows(local.theSheet, local.qryReadContact)>
         <cfset spreadsheetFormatRow(local.theSheet, {bold=true,alignment='center'}, 1)>
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
         <cfreturn true>
@@ -428,13 +410,13 @@
             <cfset session.structUserDetails["userName"] = qrySelectUser.userName>
             <cfset session.structUserDetails["userImage"] = qrySelectUser.userImage>
             <cfset session.structUserDetails["emailId"] = qrySelectUser.emailId>
-            <cflocation  url="Home.cfm">
+            <cflocation  url="Home.cfm" addToken="no">
 
         </cfif>
     </cffunction>
 <!---  Birthday Wish    --->
      <cffunction  name="birthdayWish"> 
-        
+          
         <cfquery name="qryBday">
             SELECT firstName
                    ,lastName
@@ -450,8 +432,9 @@
             <cfdump  var="#local.today#">
             <cfdump  var="#local.userDob#">
             <cfif local.today EQ local.userDob> 
-                <cfmail  from="jibinvarghese05101999@gmail.com"  subject="Dummy Mail"  to="#qryBday.emailId#">
-                    jfsj"Khn
+                <cfmail  from="jibinvarghese05101999@gmail.com"  subject="Happy Birthday"  to="#qryBday.emailId#">
+                    Happy Birthday
+                    <cfmailparam file="./Assets/Images/happyBday.jpg" disposition="attachment">
                 </cfmail>
                 <cfset local.result =" Email sent ">
             

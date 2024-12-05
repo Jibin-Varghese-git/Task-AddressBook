@@ -2,7 +2,6 @@
     <head>
         <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
-        <script src="js/script.js"></script>
     </head>
     <body>
         <div>
@@ -59,11 +58,11 @@
 <!---                           <cfset local.obj = createObject("component", "components.addressBook")> --->
 <!---                                 <cfset local.qryReadContact = application.obj.readContact()> --->
                                 <cfset ormReload()>
-                                <cfset  local.qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
+                                <cfset  qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
                                  
                                 <cfoutput>
                                 
-                                    <cfloop array="#local.qryReadContact#" item="item">
+                                    <cfloop array="#qryReadContact#" item="item">
                                     
                                         <div class="singleContact px-2 py-3 d-flex align-items-center">
                                             <div class="ContactImageDiv">
@@ -291,23 +290,23 @@
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="#expandpath("Assets/Images")#" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                         </cffile>
-                        <cfset local.imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
+                        <cfset imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
                     <cfelse>
-                        <cfset local.imagePath = "Assets/Images/user.png">
+                        <cfset imagePath = "Assets/Images/user.png">
                     </cfif>
 
                     <cfloop collection="#form#" item="item">
-                        <cfset local.structContactInfo[item] = form[item]>
+                        <cfset structContactInfo[item] = form[item]>
                     </cfloop>
-                    <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
+                    <cfset structContactInfo["contactImage"]="#imagePath#">
 
 <!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
-                    <cfset local.result = application.obj.addContact(local.structContactInfo)>
-                    <cfif local.result == "error">
+                    <cfset result = application.obj.addContact(structContactInfo=structContactInfo)>
+                    <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
-                    <cfelseif local.result == "error1">
+                    <cfelseif result == "error1">
                         <h2 class="text-danger">Email Id  Already Exists</h2>
-                    <cfelseif local.result == "error2">
+                    <cfelseif result == "error2">
                         <h2 class="text-danger">Email Id  cannot use</h2>
                     <cfelse>
                         <cflocation  url="Home.cfm" addToken="no">
@@ -321,23 +320,23 @@
                     <cfif  len(form.contactImage) GT 1>
                         <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.contactImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                         </cffile>
-                        <cfset local.imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
+                        <cfset imagePath = "Assets/Images/#imgUploaded.SERVERFILE#">
                     <cfelse>
-                        <cfset local.imagePath = "#form.imgHidden#">
+                        <cfset imagePath = "#form.imgHidden#">
                     </cfif>
 
                     <cfloop collection="#form#" item="item">
-                        <cfset local.structContactInfo[item] = form[item]>
+                        <cfset structContactInfo[item] = form[item]>
                     </cfloop>
-                    <cfset local.structContactInfo["contactImage"]="#local.imagePath#">
+                    <cfset structContactInfo["contactImage"]="#imagePath#">
                      
 <!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
-                    <cfset local.result = application.obj.editContact(local.structContactInfo)>
-                    <cfif local.result == "error">
+                    <cfset result = application.obj.editContact(structContactInfo=structContactInfo)>
+                    <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
-                    <cfelseif local.result == "error1">
+                    <cfelseif result == "error1">
                         <h2 class="text-danger">Email Id  Already Exists</h2>
-                    <cfelseif local.result == "error2">
+                    <cfelseif result == "error2">
                         <h2 class="text-danger">Email Id  cannot use</h2>
                     <cfelse>
                         <cflocation  url="Home.cfm" addToken="no">
@@ -346,14 +345,11 @@
                 </cfif>
             </cfif>
 
-            <cfif structKeyExists(form, "pdfBtn")>
+            <cfif structKeyExists(form, "pdfBtn")> 
             
-               <cfdocument  format="PDF">  
+               <cfdocument  format="PDF" filename="Assets/Docs/Contact.pdf" overwrite="true">  
                     <table style="border-spacing:30px" border="2">
                         <tr>
-                            <th>
-                                <h6 class="contactHeadingSpan" style="">PROFILE IMAGE<h6>
-                            </th>
                             <th>
                                 <h6 class="contactHeadingSpan" style="">NAME<h6>
                             </th>
@@ -367,16 +363,12 @@
                 
                         <!--- Contact --->
 <!---                   <cfset local.obj = createObject("component", "components.addressBook")> --->
-                        <cfset local.qryReadContact = application.obj.readContact()>
-                            <cfloop query="local.qryReadContact">
+                        <cfset qryReadContact = application.obj.readContact()>
+                            <cfloop query="qryReadContact">
                                 <tr>
-                                    <td>
-                                   
-                                        <img src="#local.qryReadContact.contactImage#"  alt="No image found" width="50" height="50">
-                                    </td>
-                                    <td>#local.qryReadContact.firstname# #local.qryReadContact.lastname#</td>
-                                    <td>#local.qryReadContact.emailId#</td>
-                                    <td>#local.qryReadContact.phoneNo#</td>
+                                    <td>#qryReadContact.firstname# #qryReadContact.lastname#</td>
+                                    <td>#qryReadContact.emailId#</td>
+                                    <td>#qryReadContact.phoneNo#</td>
                                 </tr>
                             </cfloop>
                     </table>
@@ -385,6 +377,7 @@
             </cfif>
 
         </cfoutput>
+        <script src="js/script.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
