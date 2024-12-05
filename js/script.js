@@ -331,7 +331,7 @@ if ( window.history.replaceState ) {
 function funViewContact(contactId){
     $.ajax({
         type : "GET",
-        url : "components/addressBook.cfc?method=viewContact",
+        url : "components/addressBook.cfc?method=selectContact",
         data : {contactId : contactId.value},
         success:function(result){
                 if(result)

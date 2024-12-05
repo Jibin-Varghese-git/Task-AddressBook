@@ -48,15 +48,15 @@
                             <cfif structKeyExists(form, "register")>
                                 <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.userImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                                 </cffile>
-                                <cfset local.imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
+                                <cfset imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
                                 <cfloop collection="#form#" item="item">
-                                    <cfset local.structUserInfo[item] = trim(form[item])>
+                                    <cfset structUserInfo[item] = trim(form[item])>
                                 </cfloop>
-                                <cfset local.structUserInfo["imagePath"] = local.imagePath>
+                                <cfset structUserInfo["imagePath"] = imagePath>
 <!---                                 <cfset local.obj = createObject("component", "components.addressBook")> --->
-                                <cfset local.result = application.obj.signUpInput(local.structUserInfo)>
+                                <cfset result = application.obj.signUpInput(structUserInfo=structUserInfo)>
                                 <cfoutput>
-                                    <span class="fw-bold bg-success text-white">#local.result#</span>
+                                    <span class="fw-bold bg-success text-white">#result#</span>
                                 </cfoutput>
                             </cfif>
                         </div>
