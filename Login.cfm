@@ -45,17 +45,12 @@
                </div>
                
             </form>
-
-            
             
             <cfif structKeyExists(session, "googleInfo")>
                  <cflocation  url="googleLogin.cfm">
-            </cfif>
-          
-
+            </cfif>   
          
             <cfif structKeyExists(form, "login")>
-<!---                 <cfset local.obj = createObject("component", "components.addressBook")> --->
                 <cfset result = application.obj.userLogin(form.userName,form.password)>
                 <cfif result>
                     <cflocation  url="Home.cfm" addToken="no">
