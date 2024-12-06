@@ -54,9 +54,7 @@
                                     </div>
                                 </div>
 
-                                <!--- Contact --->
-<!---                           <cfset local.obj = createObject("component", "components.addressBook")> --->
-<!---                                 <cfset local.qryReadContact = application.obj.readContact()> --->
+                                <!--- Contact Listing --->
                                 <cfset ormReload()>
                                 <cfset  qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
                                  
@@ -275,7 +273,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>  ////
+                        </div>  
                     </div>
                 </div>
                 <!--Modal View End-->
@@ -300,7 +298,6 @@
                     </cfloop>
                     <cfset structContactInfo["contactImage"]="#imagePath#">
 
-<!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
                     <cfset result = application.obj.addContact(structContactInfo=structContactInfo)>
                     <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
@@ -310,8 +307,7 @@
                         <h2 class="text-danger">Email Id  cannot use</h2>
                     <cfelse>
                         <cflocation  url="Home.cfm" addToken="no">
-                    </cfif>
-                    
+                    </cfif>         
                     
                 </cfif>
 
@@ -330,7 +326,6 @@
                     </cfloop>
                     <cfset structContactInfo["contactImage"]="#imagePath#">
                      
-<!---               <cfset local.obj = createObject("component", "components.addressBook")> --->
                     <cfset result = application.obj.editContact(structContactInfo=structContactInfo)>
                     <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
@@ -361,8 +356,7 @@
                             </th>
                         </tr>
                 
-                        <!--- Contact --->
-<!---                   <cfset local.obj = createObject("component", "components.addressBook")> --->
+                        <!--- Contact Listing --->
                         <cfset qryReadContact = application.obj.readContact()>
                             <cfloop query="qryReadContact">
                                 <tr>

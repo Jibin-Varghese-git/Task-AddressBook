@@ -46,14 +46,13 @@
                             <span>Already have an account? <a class="text-decoration-none" href="Login.cfm"> Login</a></span>
                              <!-- cf starts here -->
                             <cfif structKeyExists(form, "register")>
-                                <cffile  action="upload" destination="C:\ColdFusion2021\cfusion\wwwroot\AdressBook-Task\Assets\Images" filefield="form.userImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
+                                <cffile  action="upload" destination="#expandPath("Assets\Images")#" filefield="form.userImage" result="imgUploaded" nameconflict="MAKEUNIQUE"> 
                                 </cffile>
                                 <cfset imagePath = "Assets\Images\#imgUploaded.SERVERFILE#">
                                 <cfloop collection="#form#" item="item">
                                     <cfset structUserInfo[item] = trim(form[item])>
                                 </cfloop>
                                 <cfset structUserInfo["imagePath"] = imagePath>
-<!---                                 <cfset local.obj = createObject("component", "components.addressBook")> --->
                                 <cfset result = application.obj.signUpInput(structUserInfo=structUserInfo)>
                                 <cfoutput>
                                     <span class="fw-bold bg-success text-white">#result#</span>

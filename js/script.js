@@ -1,3 +1,5 @@
+
+//Function for Sign Up Validation
 function signUpVal(event){
 
     let fullName = document.getElementById("fullName").value;
@@ -111,22 +113,17 @@ function signUpVal(event){
 
 }
 
+//Function for logout
 function funlogout(){
     if(confirm("Do you want to logout?"))
     {
-        
         $.ajax({
             type:"GET",
             url:"components/addressBook.cfc?method=logout",
             success:function(result){
                 if(result)
                 {
-                   
                     location.reload();
-                }
-                else
-                {
-                   alert("logout error")
                 }
             }
         });
@@ -136,13 +133,29 @@ function funlogout(){
     } 
 }
 
+//Function for date format
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+//Function for ADD/EDIT Validation
 function funModalVal(event){
     let contactTitle=document.getElementById("contactTitle").value;
     let fname=document.getElementById("firstName").value;
     let lname=document.getElementById("lastName").value;
     let gender=document.getElementById("contactGender").value;
     let dob=document.getElementById("dateOfBirth").value;
-    let contactImage=document.getElementById("contactImage").value;
+    //let contactImage=document.getElementById("contactImage").value;
     let address=document.getElementById("address").value;
     let street=document.getElementById("street").value;
     let district=document.getElementById("district").value;
@@ -153,6 +166,9 @@ function funModalVal(event){
     let phoneNo=document.getElementById("phoneNo").value;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const dateToday = formatDate(new Date())
+    console.log(dob)
+    console.log(dateToday)
 
     document.getElementById("errorTitle").innerHTML="";
     document.getElementById("errorFname").innerHTML="";
@@ -198,6 +214,11 @@ function funModalVal(event){
     if(dob.length == "")
     {
         document.getElementById("errorDob").innerHTML="Select your Date of Birth";
+        event.preventDefault();
+    }
+    else if(dob >= dateToday)
+    {
+        document.getElementById("errorDob").innerHTML="Invalid Date of birth";
         event.preventDefault();
     }
 
@@ -286,6 +307,7 @@ function funModalVal(event){
     
 }
 
+//Function for clear the warnings
 function funClose(){
     document.getElementById("errorTitle").innerHTML="";
     document.getElementById("errorFname").innerHTML="";
@@ -302,32 +324,36 @@ function funClose(){
     document.getElementById("errorPhoneNo").innerHTML="";
 }
 
+//Function delete contact
 function funDelete(contactId){
     if(confirm("Do you want to Delete this  Contact?"))
-        {
-            $.ajax({
-                type:"GET",
-                url:"components/addressBook.cfc?method=deleteContact",
-                data:{contactId : contactId.value},
-                success:function(result){
-                    if(result)
-                    {
-                       
-                        location.reload();
-                    }
-                    else
-                    {
-                       alert("error")
-                    }
+    {
+        $.ajax({
+            type:"GET",
+            url:"components/addressBook.cfc?method=deleteContact",
+            data:{contactId : contactId.value},
+            success:function(result){
+                if(result)
+                {
+                    
+                    location.reload();
                 }
-            });
-        } 
+                else
+                {
+                    alert("error")
+                }
+            }
+        });
+    } 
 }
 
+//Prevent resubmitting form
 if ( window.history.replaceState ) {
     window.history.replaceState( null, null, window.location.href );
 }
 
+
+//Function to view Contact
 function funViewContact(contactId){
     $.ajax({
         type : "GET",
@@ -358,6 +384,8 @@ function funViewContact(contactId){
     });
 }
 
+
+//Function for Edit contact
 function funEditContact(contactId){
     document.getElementById("createForm").reset();
     $.ajax({
@@ -396,17 +424,14 @@ function funEditContact(contactId){
     });
 }
 
+//Function to refresh the modal after Edit
 function funCreateContact(){
     document.getElementById("modalHeading").innerHTML= "CREATE CONTACT";
     document.getElementById("editModalImage").src= "Assets/Images/user.png";
     document.getElementById("createForm").reset();
 }
 
-// function pageReload(){
-   
-//     location.reload();
-// }
-
+//Function to Print page
 function funPrint(){
     var printContents = document.getElementById("contentBoxRight").innerHTML;
     var originalContents = document.body.innerHTML;
@@ -416,6 +441,8 @@ function funPrint(){
     document.body.innerHTML = originalContents;
 }
 
+
+//Function for Excel
 function funXls()
 {
     if(confirm("Do you want to download"))
@@ -434,6 +461,7 @@ function funXls()
     } 
 }
 
+//Function for PDF
 function funPdf(){
     if(confirm("Do you want to download PDF"))
     {
@@ -444,22 +472,4 @@ function funPdf(){
         return false;
     }
 }
-
-// function funValLogin(event){
-//     let userName=document.getElementById("userName").value;
-//     let password=document.getElementById("password").value;
-//     alert()
-//     if(userName.length == 0)
-//     {
-//         document.getElementById("errorUserName").innerHTML="Enter the email id";
-//         event.preventDefault();
-//     }
-
-//     if(password.length == 0)
-//     {
-//         document.getElementById("errorPassword").innerHTML="Enter password";
-//         event.preventDefault();
-//     }
-   
-// }
 
