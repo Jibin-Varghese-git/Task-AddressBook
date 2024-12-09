@@ -62,7 +62,7 @@
                                 
                                     <cfloop array="#qryReadContact#" item="item">
                                     
-                                        <div class="singleContact px-2 py-3 d-flex align-items-center">
+                                        <div class="singleContact px-2 py-3 d-flex align-items-center" id="#item.getcontactId()#">
                                             <div class="ContactImageDiv">
                                                 <img src="#item.getcontactImage()#" class="rounded-circle" alt="No image found">
                                             </div>
@@ -357,7 +357,7 @@
                         </tr>
                 
                         <!--- Contact Listing --->
-                        <cfset qryReadContact = application.obj.readContact()>
+                        <cfset qryReadContact = application.obj.selectContact()>
                             <cfloop query="qryReadContact">
                                 <tr>
                                     <td>#qryReadContact.firstname# #qryReadContact.lastname#</td>
