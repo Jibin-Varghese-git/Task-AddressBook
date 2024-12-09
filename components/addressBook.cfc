@@ -81,7 +81,6 @@
 <!---   Add Contact   --->
     <cffunction  name="addContact" returntype="string">
         <cfargument  name="structContactinfo" type="struct">
-            <cfdump  var="#arguments.structContactinfo#">
 
         <cfquery name="qryPhnCheck">
             SELECT COUNT(phoneNo) AS 
@@ -124,13 +123,11 @@
                                 emailId,
                                 phoneNo,
                                 _createdBy,
-                                _createdOn,
-                                _updatedBy,
-                                _updatedOn
+                                _createdOn
                             )
                     VALUES (
                         < cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["firstName"]#" cfsqltype = cf_sql_varchar >,
+                        < cfqueryparam value = "#arguments.structContactinfo[ "firstName"]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#arguments.structContactinfo["lastName"]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#arguments.structContactinfo["gender"]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#arguments.structContactinfo["dateOfBirth"]#" cfsqltype = cf_sql_varchar >,
@@ -144,11 +141,9 @@
                         < cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#local.date#" cfsqltype = cf_sql_date >,
-                        < cfqueryparam value = "#session.structUserDetails[" userId "]#" cfsqltype = cf_sql_varchar >,
                         < cfqueryparam value = "#local.date#" cfsqltype = cf_sql_date >
                         )
-
+ 
                 </cfquery>
 
                 <cfset local.result = "Data Added">
@@ -159,44 +154,19 @@
        
     </cffunction>
 
-<!--- Read All  Contacts --->
-    <cffunction  name="readContact" returntype="query"> 
-        
-        <cfquery name="qryReadContact">
-           SELECT   title,
-                    firstName,
-                    lastName,
-                    gender,
-                    dob,
-                    address,
-                    street,
-                    district,
-                    STATE,
-                    country,
-                    pincode,
-                    emailId,
-                    phoneNo
-            FROM contactTable
-            WHERE _createdBy = < cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >
-        </cfquery>
 
-        <cfreturn qryReadContact>
-    </cffunction> 
+<!---   Select Contacts   --->
+    <cffunction  name="selectContact" returnformat="json" access="remote">
+        <cfargument  name="contactId" type="string">
 
-<!---   Delete Contact   --->
-    <cffunction  name="deleteContact" returntype="any" access="remote">
-        <cfargument  name="conactId" type="string">
+        <cfif structKeyExists(arguments,"contactId")>
+            <cfset local.colName = "contactId">
+            <cfset local.colValue = arguments.contactId>            
+        <cfelse>
+            <cfset local.colName = "_createdBy">
+            <cfset local.colValue = session.structUserDetails["userId"]>
+        </cfif>
 
-        <cfquery name="qryDeleteContact">
-            DELETE FROM contactTable
-            WHERE contactId=<cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
-        </cfquery>
-        <cfreturn true>
-    </cffunction>
-
-<!---   Select Specific Contact   --->
-     <cffunction  name="selectContact" returnformat="json" access="remote">
-        
         <cfquery name="qrySelectContact">
             SELECT contactId,
                     title,
@@ -214,8 +184,10 @@
                     emailId,
                     phoneNo
             FROM contactTable
-            WHERE contactId = < cfqueryparam value = "#arguments.contactId#" cfsqltype = cf_sql_varchar >
+            WHERE #local.colName# = < cfqueryparam value = "#local.colValue#" cfsqltype = cf_sql_varchar >
         </cfquery>
+
+    <cfif structKeyExists(arguments,"contactId")>
 
         <cfset local.structContactUser["contactId"] = qrySelectContact.contactId>
         <cfset local.structContactUser["title"] = qrySelectContact.title>
@@ -232,9 +204,24 @@
         <cfset local.structContactUser["pincode"] = qrySelectContact.pincode>
         <cfset local.structContactUser["emailId"] = qrySelectContact.emailId>
         <cfset local.structContactUser["phoneNo"] = qrySelectContact.phoneNo>
-        <cfreturn local.structContactUser>
+        <cfset local.result = local.structContactUser>
+    <cfelse>
+        <cfset local.result = qrySelectContact>
+    </cfif>
+    <cfreturn local.result>
     </cffunction>
 
+<!---   Delete Contact   --->
+
+    <cffunction  name="deleteContact" returntype="any" access="remote">
+        <cfargument  name="conactId" type="string">
+
+        <cfquery name="qryDeleteContact">
+            DELETE FROM contactTable
+            WHERE contactId=<cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        <cfreturn true>
+    </cffunction>
 <!--- Edit Contact --->
   
     <cffunction  name="editContact" returntype="any">

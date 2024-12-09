@@ -335,8 +335,7 @@ function funDelete(contactId){
             success:function(result){
                 if(result)
                 {
-                    
-                    location.reload();
+                    document.getElementById(contactId.value).remove();
                 }
                 else
                 {
