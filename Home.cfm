@@ -1,6 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
@@ -141,6 +142,18 @@
                                             <input type="hidden" value="null" name="imgHidden" id="imgHidden">
                                             <input type="file" id="contactImage" name="contactImage" >
                                         </div>
+                                        <div class="personalInfoDiv4 my-3">
+                                            <span>Select Role</span><br>
+                                            <cfset selectRole = application.obj.selectRole()>
+                                            <select class="roleSelect selectpicker border" name="roleSelect" placeholder="Select Role" id="roleSelect" multiple data-live-search="true">
+                                                <cfoutput>
+                                                    <cfloop query="selectRole">
+                                                        <option value="#selectRole.roleId#">#selectRole.roleName#</option>
+                                                    </cfloop>
+                                                </cfoutput>
+                                            </select>
+                                            <span class="text-danger fs-6" id="errorRole"></span>
+                                        </div>
 
                                         <div class="modalEditSubHeading my-3">
                                             <span>Contact Details<span>
@@ -258,6 +271,11 @@
                                             <div class="userDetails"><span id="emailIdView"></span></div>
                                         </div>
                                         <div class="infoDiv my-2 d-flex">
+                                            <div class="headings">Roles</div>
+                                            <div class="middle">:</div>
+                                            <div class="userDetails"><span id="userRoleView"></span></div>
+                                        </div>
+                                        <div class="infoDiv my-2 d-flex">
                                             <div class="headings">Phone</div>
                                             <div class="middle">:</div>
                                             <div class="userDetails"><span id="phoneNoView"></span></div>
@@ -297,7 +315,7 @@
                         <cfset structContactInfo[item] = form[item]>
                     </cfloop>
                     <cfset structContactInfo["contactImage"]="#imagePath#">
-
+                    <cfdump  var="#structContactInfo["roleSelect"]#">
                     <cfset result = application.obj.addContact(structContactInfo=structContactInfo)>
                     <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
@@ -374,6 +392,9 @@
         <script src="js/script.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </body>    
 </html>

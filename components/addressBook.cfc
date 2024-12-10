@@ -126,26 +126,39 @@
                                 _createdOn
                             )
                     VALUES (
-                        < cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo[ "firstName"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["lastName"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["gender"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["dateOfBirth"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["contactImage"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["address"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["street"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["district"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["STATE"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["country"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["pincode"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >,
-                        < cfqueryparam value = "#local.date#" cfsqltype = cf_sql_date >
+                        <cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo[ "firstName"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["lastName"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["gender"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["dateOfBirth"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["contactImage"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["address"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["street"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["district"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["STATE"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["country"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["pincode"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#local.date#" cfsqltype = cf_sql_date>
                         )
- 
                 </cfquery>
-
+                <cfquery name="qryselectId">
+                    SELECT contactId 
+                    FROM contactTable
+                    WHERE emailId = <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar>
+                    AND   _createdBy = <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar>
+                </cfquery>
+                <cfset local.contactId = qryselectId.contactId>
+                <cfloop list="#arguments.structContactinfo["roleSelect"]#" item="item" delimiters=",">
+                    <cfquery>
+                        INSERT INTO userRole
+                        VALUES ( <cfqueryparam value = "#item#" cfsqltype = cf_sql_varchar>,
+                                 <cfqueryparam value = "#local.contactId#" cfsqltype = cf_sql_varchar>
+                               )
+                    </cfquery>
+                </cfloop>
                 <cfset local.result = "Data Added">
             </cfif>
         </cfif>
@@ -188,6 +201,13 @@
         </cfquery>
 
     <cfif structKeyExists(arguments,"contactId")>
+        <cfquery name="local.qrySelectRole">
+            SELECT userRole.roleId, roleTable.roleName
+            FROM userRole
+            INNER JOIN roleTable
+            ON userRole.roleId = roleTable.roleId
+            WHERE #local.colName# = < cfqueryparam value = "#local.colValue#" cfsqltype = cf_sql_varchar >
+        </cfquery>
 
         <cfset local.structContactUser["contactId"] = qrySelectContact.contactId>
         <cfset local.structContactUser["title"] = qrySelectContact.title>
@@ -204,6 +224,10 @@
         <cfset local.structContactUser["pincode"] = qrySelectContact.pincode>
         <cfset local.structContactUser["emailId"] = qrySelectContact.emailId>
         <cfset local.structContactUser["phoneNo"] = qrySelectContact.phoneNo>
+        <cfset local.structContactUser["roleSelect"]="">
+        <cfloop query="local.qrySelectRole">
+            <cfset local.structContactUser["roleSelect"]=local.structContactUser["roleSelect"] & " " & local.qrySelectRole.roleName>
+        </cfloop>
         <cfset local.result = local.structContactUser>
     <cfelse>
         <cfset local.result = qrySelectContact>
@@ -281,11 +305,10 @@
 <!---   Read data for spreadsheet   --->
     <cffunction  name="spreadsheetDownload" returntype="any" access="remote">
 
-        <cfset local.qryReadContact = readContact()>
+        <cfset local.qryReadContact = selectContact()>
 
         <cfset local.fileName = createUUID() & ".xlsx" >
         <cfset  local.theFile= expandPath("../Assets/Docs/"&local.fileName)>
-        <cfdump  var="#local.theFile#">
         <cfset local.theSheet = SpreadsheetNew(true)>
         <cfset spreadsheetAddRow(local.theSheet,"Title,First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number")>
         <cfset spreadsheetAddRows(local.theSheet, local.qryReadContact)>
@@ -392,5 +415,16 @@
         </cfloop>
         <cfreturn local.result> 
     </cffunction> 
+
+<!---  Select Role    --->
+    <cffunction  name="selectRole">
+
+        <cfquery name="local.qrySelectRole">
+            SELECT roleId,
+                   roleName
+            FROM roleTable
+        </cfquery>
+        <cfreturn local.qrySelectRole>
+    </cffunction>
 
 </cfcomponent>
