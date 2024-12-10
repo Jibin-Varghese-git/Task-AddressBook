@@ -306,6 +306,23 @@ header{
     font-weight: 600;
 }
 
+.personalInfoDiv4 span{
+    color: #337AB7;
+    font-size:17px;
+    font-weight: 600;
+}
+
+.roleSelect
+{
+    height:40px;
+}
+
+.roleSelect button
+{
+    height:40px;
+}
+
+
 .contactInfoDiv1 span{
     color: #337AB7;
     font-size:17px;

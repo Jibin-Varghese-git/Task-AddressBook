@@ -164,7 +164,8 @@ function funModalVal(event){
     let pincode=document.getElementById("pincode").value;
     let emailId=document.getElementById("emailId").value;
     let phoneNo=document.getElementById("phoneNo").value;
-
+    let role=document.getElementById("roleSelect").value;
+   
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const dateToday = formatDate(new Date())
     console.log(dob)
@@ -183,9 +184,7 @@ function funModalVal(event){
     document.getElementById("errorPincode").innerHTML="";
     document.getElementById("errorEmail").innerHTML="";
     document.getElementById("errorPhoneNo").innerHTML="";
-
-
-
+    document.getElementById("errorRole").innerHTML="";
 
     if(contactTitle == "selected")
     {
@@ -227,6 +226,12 @@ function funModalVal(event){
         document.getElementById("errorAddress").innerHTML="Enter  address";
         event.preventDefault();
     }
+
+    if(role.length == "")
+        {
+            document.getElementById("errorRole").innerHTML="Select a role";
+            event.preventDefault();
+        }
 
     if(street.length == "")
     {
@@ -373,7 +378,10 @@ function funViewContact(contactId){
                    document.getElementById("pincodeView").innerHTML= structContactUser.pincode;
                    document.getElementById("emailIdView").innerHTML= structContactUser.emailId;
                    document.getElementById("phoneNoView").innerHTML= structContactUser.phoneNo;
-                   document.getElementById("userContactImage").src= structContactUser.contactImage
+                   document.getElementById("userContactImage").src= structContactUser.contactImage;
+                   var roles =structContactUser.roleSelect.trim();
+                   var roles=roles.replace(/ /g, ',');
+                   document.getElementById("userRoleView").innerHTML= roles;
                 }
                 else
                 {
