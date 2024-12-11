@@ -1,7 +1,7 @@
 <html>
     <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
@@ -145,7 +145,7 @@
                                         <div class="personalInfoDiv4 my-3">
                                             <span>Select Role</span><br>
                                             <cfset selectRole = application.obj.selectRole()>
-                                            <select class="roleSelect selectpicker border" name="roleSelect" placeholder="Select Role" id="roleSelect" multiple data-live-search="true">
+                                            <select class="roleSelect  border" name="roleSelect" multiple placeholder="Select Role" id="roleSelect" multiple data-live-search="true">
                                                 <cfoutput>
                                                     <cfloop query="selectRole">
                                                         <option value="#selectRole.roleId#">#selectRole.roleName#</option>
@@ -343,7 +343,7 @@
                         <cfset structContactInfo[item] = form[item]>
                     </cfloop>
                     <cfset structContactInfo["contactImage"]="#imagePath#">
-                     
+                    
                     <cfset result = application.obj.editContact(structContactInfo=structContactInfo)>
                     <cfif result == "error">
                         <h2 class="text-danger">Phone Number  Already Exists</h2>
@@ -372,6 +372,9 @@
                             <th>
                                 <h6 class="contactHeadingSpan">PHONE NUMBER<h6>
                             </th>
+                            <th>
+                                <h6 class="contactHeadingSpan">ROLES<h6>
+                            </th>
                         </tr>
                 
                         <!--- Contact Listing --->
@@ -381,6 +384,14 @@
                                     <td>#qryReadContact.firstname# #qryReadContact.lastname#</td>
                                     <td>#qryReadContact.emailId#</td>
                                     <td>#qryReadContact.phoneNo#</td>
+                                    <cfset qrySelectRole = application.obj.selectRoleById(qryReadContact.contactId)>
+                                    <td>
+                                        <cfoutput>
+                                            <cfloop query="qrySelectRole">
+                                                #qrySelectRole.roleName# 
+                                            </cfloop>
+                                        </cfoutput>
+                                    </td>
                                 </tr>
                             </cfloop>
                     </table>
@@ -389,12 +400,11 @@
             </cfif>
 
         </cfoutput>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="js/script.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
     </body>    
 </html>

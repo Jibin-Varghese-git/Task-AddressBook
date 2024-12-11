@@ -430,3 +430,10 @@ header{
     border: none;
     background-color: #ffffff;
 }
+
+.chosen-container
+{
+    width:150px !important;
+}
+
+

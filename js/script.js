@@ -1,4 +1,8 @@
 
+$(document).ready(function(){
+    $("#roleSelect").chosen();
+})
+
 //Function for Sign Up Validation
 function signUpVal(event){
 
@@ -327,6 +331,9 @@ function funClose(){
     document.getElementById("errorPincode").innerHTML="";
     document.getElementById("errorEmail").innerHTML="";
     document.getElementById("errorPhoneNo").innerHTML="";
+    document.getElementById("errorRole").innerHTML="";
+    $('#roleSelect').val("");
+    $('#roleSelect').trigger('chosen:updated'); 
 }
 
 //Function delete contact
@@ -402,7 +409,7 @@ function funEditContact(contactId){
         success:function(result){
                 if(result)
                 {
-                    structContactUser=JSON.parse(result)  
+                    structContactUser=JSON.parse(result);  
                     document.getElementById("modalHeading").innerHTML= "EDIT CONTACT"
                     document.getElementById("contactTitle").value= structContactUser.title;
                     document.getElementById("firstName").value= structContactUser.firstName;
@@ -420,8 +427,8 @@ function funEditContact(contactId){
                     document.getElementById("phoneNo").value= structContactUser.phoneNo;
                     document.getElementById("editModalImage").src= structContactUser.contactImage;
                     document.getElementById("addContactHidden").value= structContactUser.contactId;
-                    
-
+                    $('#roleSelect').val(structContactUser.roleValues);  // Set selected roles
+                    $('#roleSelect').trigger('chosen:updated');  // Refresh Chosen UI
                 }
                 else
                 {
