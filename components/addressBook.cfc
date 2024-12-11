@@ -201,13 +201,7 @@
         </cfquery>
 
     <cfif structKeyExists(arguments,"contactId")>
-        <cfquery name="local.qrySelectRole">
-            SELECT userRole.roleId, roleTable.roleName
-            FROM userRole
-            INNER JOIN roleTable
-            ON userRole.roleId = roleTable.roleId
-            WHERE #local.colName# = < cfqueryparam value = "#local.colValue#" cfsqltype = cf_sql_varchar >
-        </cfquery>
+        <cfset local.qrySelectRole = selectRoleById(arguments.contactId)>
 
         <cfset local.structContactUser["contactId"] = qrySelectContact.contactId>
         <cfset local.structContactUser["title"] = qrySelectContact.title>
@@ -225,9 +219,12 @@
         <cfset local.structContactUser["emailId"] = qrySelectContact.emailId>
         <cfset local.structContactUser["phoneNo"] = qrySelectContact.phoneNo>
         <cfset local.structContactUser["roleSelect"]="">
+        <cfset local.structContactUser["roleValues"] = []>
         <cfloop query="local.qrySelectRole">
             <cfset local.structContactUser["roleSelect"]=local.structContactUser["roleSelect"] & " " & local.qrySelectRole.roleName>
+            <cfset arrayAppend(local.structContactUser["roleValues"], local.qrySelectRole.roleId)>
         </cfloop>
+        
         <cfset local.result = local.structContactUser>
     <cfelse>
         <cfset local.result = qrySelectContact>
@@ -235,15 +232,36 @@
     <cfreturn local.result>
     </cffunction>
 
+<!--- Select Role By Id      --->
+    <cffunction  name="selectRoleById">
+        <cfargument  name="contactId">
+
+         <cfquery name="local.qrySelectRole">
+            SELECT userRole.roleId, roleTable.roleName
+            FROM userRole
+            INNER JOIN roleTable
+            ON userRole.roleId = roleTable.roleId
+            WHERE contactId = < cfqueryparam value = "#arguments.contactId#" cfsqltype = cf_sql_varchar >
+        </cfquery>
+
+        <cfreturn local.qrySelectRole>
+    </cffunction>
+
 <!---   Delete Contact   --->
 
     <cffunction  name="deleteContact" returntype="any" access="remote">
         <cfargument  name="conactId" type="string">
 
+        <cfquery name="qrydeleteRoles">
+            DELETE FROM userRole
+            WHERE contactId = <cfqueryparam value="#arguments.contactId#" cfsqltype=cf_sql_varchar>
+        </cfquery>
+
         <cfquery name="qryDeleteContact">
             DELETE FROM contactTable
             WHERE contactId=<cfqueryparam value="#arguments.contactId#" cfsqltype="cf_sql_varchar">
         </cfquery>
+
         <cfreturn true>
     </cffunction>
 <!--- Edit Contact --->
@@ -266,7 +284,8 @@
                AND _createdby = <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >
                AND contactId != <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
         </cfquery>
-
+        
+       
         <cfif qryPhnCheck.phnCount GT 0>
             <cfset local.result = "error">
         <cfelseif  qryEmailCheck.emailCount GT 0>
@@ -275,7 +294,7 @@
             <cfset local.result = "error2">
         <cfelse>
             <cfset local.date = dateFormat(now(),"dd-mm-yyyy")>
-    
+
             <cfquery name="qryEditContact">
                 UPDATE contactTable 
                 SET title = <cfqueryparam value="#arguments.structContactinfo["title"]#" cfsqltype=cf_sql_varchar>,
@@ -296,6 +315,20 @@
                     _updatedOn = <cfqueryparam value="#local.date#" cfsqltype=cf_sql_date>
                 WHERE   contactId = <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
             </cfquery>
+            
+            <cfquery name="qrydeleteRoles">
+                DELETE FROM userRole
+                WHERE contactId = <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
+            </cfquery>
+        
+            <cfloop list="#arguments.structContactinfo["roleSelect"]#" item="item" delimiters=",">
+                <cfquery>
+                    INSERT INTO userRole
+                    VALUES ( <cfqueryparam value = "#item#" cfsqltype = cf_sql_varchar>,
+                             <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
+                           )
+                </cfquery>
+            </cfloop>
 
             <cfset local.result = "ok">
         </cfif>
@@ -305,12 +338,11 @@
 <!---   Read data for spreadsheet   --->
     <cffunction  name="spreadsheetDownload" returntype="any" access="remote">
 
-        <cfset local.qryReadContact = selectContact()>
-
+        <cfset local.qryReadContact = selectContactRoles()>
         <cfset local.fileName = createUUID() & ".xlsx" >
         <cfset  local.theFile= expandPath("../Assets/Docs/"&local.fileName)>
         <cfset local.theSheet = SpreadsheetNew(true)>
-        <cfset spreadsheetAddRow(local.theSheet,"Title,First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number")>
+        <cfset spreadsheetAddRow(local.theSheet,"First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number,Roles")>
         <cfset spreadsheetAddRows(local.theSheet, local.qryReadContact)>
         <cfset spreadsheetFormatRow(local.theSheet, {bold=true,alignment='center'}, 1)>
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
@@ -425,6 +457,36 @@
             FROM roleTable
         </cfquery>
         <cfreturn local.qrySelectRole>
+    </cffunction>
+
+
+<!--- Select Contact Details and roles --->
+    <cffunction  name="selectContactRoles">
+
+        <cfquery name="local.qrySelectContactRoles">
+            select	firstName,
+                    lastName,
+                    gender,
+                    dob,
+                    address,
+                    street,
+                    district,
+                    STATE,
+                    country,
+                    pincode,
+                    emailId,
+                    phoneNo,
+                    (
+                    SELECT STRING_AGG(roleName,',')
+                    FROM userRole
+                    INNER JOIN roleTable
+                    ON userRole.roleId = roleTable.roleId
+                    WHERE userRole.contactId = contactTable.contactId 
+                    )
+                    AS roles
+            FROM contactTable
+        </cfquery>
+        <cfreturn local.qrySelectContactRoles>
     </cffunction>
 
 </cfcomponent>
