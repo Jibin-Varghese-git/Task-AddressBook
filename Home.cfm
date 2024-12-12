@@ -358,47 +358,6 @@
                 </cfif>
             </cfif>
 
-            <cfif structKeyExists(form, "pdfBtn")> 
-            
-               <cfdocument  format="PDF" filename="Assets/Docs/Contact.pdf" overwrite="true">  
-                    <table style="border-spacing:30px" border="2">
-                        <tr>
-                            <th>
-                                <h6 class="contactHeadingSpan" style="">NAME<h6>
-                            </th>
-                            <th>
-                                <h6 class="contactHeadingSpan" style="">EMAIL ID<h6>
-                            </th>
-                            <th>
-                                <h6 class="contactHeadingSpan">PHONE NUMBER<h6>
-                            </th>
-                            <th>
-                                <h6 class="contactHeadingSpan">ROLES<h6>
-                            </th>
-                        </tr>
-                
-                        <!--- Contact Listing --->
-                        <cfset qryReadContact = application.obj.selectContact()>
-                            <cfloop query="qryReadContact">
-                                <tr>
-                                    <td>#qryReadContact.firstname# #qryReadContact.lastname#</td>
-                                    <td>#qryReadContact.emailId#</td>
-                                    <td>#qryReadContact.phoneNo#</td>
-                                    <cfset qrySelectRole = application.obj.selectRoleById(qryReadContact.contactId)>
-                                    <td>
-                                        <cfoutput>
-                                            <cfloop query="qrySelectRole">
-                                                #qrySelectRole.roleName# 
-                                            </cfloop>
-                                        </cfoutput>
-                                    </td>
-                                </tr>
-                            </cfloop>
-                    </table>
-                </cfdocument>
-
-            </cfif>
-
         </cfoutput>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
