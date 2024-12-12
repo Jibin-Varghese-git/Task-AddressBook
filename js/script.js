@@ -386,9 +386,7 @@ function funViewContact(contactId){
                    document.getElementById("emailIdView").innerHTML= structContactUser.emailId;
                    document.getElementById("phoneNoView").innerHTML= structContactUser.phoneNo;
                    document.getElementById("userContactImage").src= structContactUser.contactImage;
-                   var roles =structContactUser.roleSelect.trim();
-                   var roles=roles.replace(/ /g, ',');
-                   document.getElementById("userRoleView").innerHTML= roles;
+                   document.getElementById("userRoleView").innerHTML= structContactUser.roleName;
                 }
                 else
                 {
@@ -409,7 +407,8 @@ function funEditContact(contactId){
         success:function(result){
                 if(result)
                 {
-                    structContactUser=JSON.parse(result);  
+                    structContactUser=JSON.parse(result); 
+                    var roleValues=structContactUser.roleValues.split(",");
                     document.getElementById("modalHeading").innerHTML= "EDIT CONTACT"
                     document.getElementById("contactTitle").value= structContactUser.title;
                     document.getElementById("firstName").value= structContactUser.firstName;
@@ -427,7 +426,7 @@ function funEditContact(contactId){
                     document.getElementById("phoneNo").value= structContactUser.phoneNo;
                     document.getElementById("editModalImage").src= structContactUser.contactImage;
                     document.getElementById("addContactHidden").value= structContactUser.contactId;
-                    $('#roleSelect').val(structContactUser.roleValues);  // Set selected roles
+                    $('#roleSelect').val(roleValues);  // Set selected roles
                     $('#roleSelect').trigger('chosen:updated');  // Refresh Chosen UI
                 }
                 else
@@ -467,7 +466,7 @@ function funXls()
             success : function(result){
                 if(result)
                 {
-                    alert("Data Saved")
+                    funDownload(result);
                 }
 
             }
@@ -479,11 +478,31 @@ function funXls()
 function funPdf(){
     if(confirm("Do you want to download PDF"))
     {
-        return true;
+        $.ajax({
+            method : "GET",
+            url : "components/addressBook.cfc?method=pdfConvert",
+            success : function(result){
+                if(result)
+                {
+                    funDownload(result);
+                }
+            }
+        });
     }
     else
     {
         return false;
     }
+}
+
+//Function download file
+function funDownload(fileUrl) 
+{
+    var createTag = document.createElement("a");
+    createTag.setAttribute("href",fileUrl);
+    createTag.setAttribute("download","");
+    document.body.appendChild(createTag);
+    createTag.click();
+    createTag.remove();
 }
 

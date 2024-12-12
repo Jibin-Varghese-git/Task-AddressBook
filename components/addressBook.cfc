@@ -4,22 +4,26 @@
     <cffunction  name="signUpInput" returntype="string">
         <cfargument  name="structUserInfo" type="struct" required="true">
 
-        <cfquery name="qryCheckUserExist">
+        <cfquery name="local.qryCheckUserNameExist">
            SELECT COUNT(userName) AS userCount
-                ,COUNT(emailId) AS emailCount
             FROM userInfo
             WHERE userName = < cfqueryparam value = "#structUserInfo["userName"]#" cfsqltype = cf_sql_varchar >
-                OR emailId = < cfqueryparam value = "#structUserInfo["emailId"]#" cfsqltype = cf_sql_varchar >;
         </cfquery>
 
-        <cfif qryCheckUserExist.userCount GT 0>
+        <cfquery name="local.qryCheckEmailExist">
+           SELECT COUNT(emailId) AS emailCount
+            FROM userInfo
+            WHERE  emailId = < cfqueryparam value = "#structUserInfo["emailId"]#" cfsqltype = cf_sql_varchar >;
+        </cfquery>
+
+        <cfif local.qryCheckUserNameExist.userCount GT 0>
             <cfset local.result = "User Name Already Exist">
-        <cfelseif  qryCheckUserExist.emailCount GT 0>
+        <cfelseif  local.qryCheckEmailExist.emailCount GT 0>
             <cfset local.result = "Email Id Already Exist">
         <cfelse>
             <cfset structUserInfo["password"] = hash(structUserInfo["password"] , "SHA-256" , "UTF-8")>
 
-            <cfquery name="qryUserSignUp">
+            <cfquery name="local.qryUserSignUp">
                 INSERT INTO userInfo (
                             fullName,
                             emailId,
@@ -48,7 +52,7 @@
 
         <cfset local.password = hash(arguments.password , "SHA-256" , "UTF-8")>
 
-        <cfquery name="qryUserLogin">
+        <cfquery name="local.qryUserLogin">
             SELECT userId,
                    fullName,
                    userName,
@@ -59,12 +63,12 @@
                 AND  password = <cfqueryparam value="#local.password#" cfsqltype="cf_sql_varchar">
         </cfquery>
 
-        <cfif qryUserLogin.recordCount>
-            <cfset session.structUserDetails["userId"] = qryUserLogin.userId>
-            <cfset session.structUserDetails["fullName"] = qryUserLogin.fullName>
-            <cfset session.structUserDetails["userName"] = qryUserLogin.userName>
-            <cfset session.structUserDetails["userImage"] = qryUserLogin.userImage>
-            <cfset session.structUserDetails["emailId"] = qryUserLogin.emailId>
+        <cfif local.qryUserLogin.recordCount>
+            <cfset session.structUserDetails["userId"] = local.qryUserLogin.userId>
+            <cfset session.structUserDetails["fullName"] = local.qryUserLogin.fullName>
+            <cfset session.structUserDetails["userName"] = local.qryUserLogin.userName>
+            <cfset session.structUserDetails["userImage"] = local.qryUserLogin.userImage>
+            <cfset session.structUserDetails["emailId"] = local.qryUserLogin.emailId>
             <cfset local.result = true>
         <cfelse>
             <cfset local.result = false>
@@ -82,7 +86,7 @@
     <cffunction  name="addContact" returntype="string">
         <cfargument  name="structContactinfo" type="struct">
 
-        <cfquery name="qryPhnCheck">
+        <cfquery name="local.qryPhnCheck">
             SELECT COUNT(phoneNo) AS 
                     phnCount
             FROM   contactTable
@@ -90,23 +94,23 @@
                 AND _createdby = <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >
         </cfquery>
 
-        <cfquery name="qryEmailCheck">
+        <cfquery name="local.qryEmailCheck">
             SELECT COUNT(emailId) AS emailCount
             FROM contactTable
             WHERE emailId = <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar >
                 AND _createdby = <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar >
         </cfquery>
 
-        <cfif qryPhnCheck.phnCount GT 0>
+        <cfif local.qryPhnCheck.phnCount GT 0>
             <cfset local.result = "error">
-        <cfelseif  qryEmailCheck.emailCount GT 0>
+        <cfelseif  local.qryEmailCheck.emailCount GT 0>
             <cfset local.result = "error1">
         <cfelse>
             <cfif arguments.structContactinfo["emailId"] == session.structUserDetails["emailId"]>
                 <cfset local.result = "error2">
             <cfelse>
                 <cfset local.date = dateFormat(now(),"dd-mm-yyyy")>
-                <cfquery name="qryAddContact">
+                <cfquery name="local.qryAddContact" result="local.addContactResult">
                    INSERT INTO contactTable (
                                 title,
                                 firstName,
@@ -126,11 +130,11 @@
                                 _createdOn
                             )
                     VALUES (
-                        <cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["title"]#" cfsqltype = cf_sql_integer>,
                         <cfqueryparam value = "#arguments.structContactinfo[ "firstName"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["lastName"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["gender"]#" cfsqltype = cf_sql_varchar>,
-                        <cfqueryparam value = "#arguments.structContactinfo["dateOfBirth"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["dateOfBirth"]#" cfsqltype = cf_sql_date>,
                         <cfqueryparam value = "#arguments.structContactinfo["contactImage"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["address"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["street"]#" cfsqltype = cf_sql_varchar>,
@@ -139,23 +143,17 @@
                         <cfqueryparam value = "#arguments.structContactinfo["country"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["pincode"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar>,
-                        <cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_varchar>,
+                        <cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_integer>,
                         <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar>,
                         <cfqueryparam value = "#local.date#" cfsqltype = cf_sql_date>
                         )
                 </cfquery>
-                <cfquery name="qryselectId">
-                    SELECT contactId 
-                    FROM contactTable
-                    WHERE emailId = <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar>
-                    AND   _createdBy = <cfqueryparam value = "#session.structUserDetails["userId"]#" cfsqltype = cf_sql_varchar>
-                </cfquery>
-                <cfset local.contactId = qryselectId.contactId>
+              
                 <cfloop list="#arguments.structContactinfo["roleSelect"]#" item="item" delimiters=",">
                     <cfquery>
                         INSERT INTO userRole
-                        VALUES ( <cfqueryparam value = "#item#" cfsqltype = cf_sql_varchar>,
-                                 <cfqueryparam value = "#local.contactId#" cfsqltype = cf_sql_varchar>
+                        VALUES ( <cfqueryparam value = "#item#" cfsqltype = cf_sql_integer>,
+                                 <cfqueryparam value = "#local.addContactResult.generatedkey#" cfsqltype = cf_sql_integer>
                                )
                     </cfquery>
                 </cfloop>
@@ -173,79 +171,81 @@
         <cfargument  name="contactId" type="string">
 
         <cfif structKeyExists(arguments,"contactId")>
-            <cfset local.colName = "contactId">
+            <cfset local.colName = "ct.contactId">
             <cfset local.colValue = arguments.contactId>            
         <cfelse>
-            <cfset local.colName = "_createdBy">
+            <cfset local.colName = "ct._createdBy">
             <cfset local.colValue = session.structUserDetails["userId"]>
         </cfif>
 
-        <cfquery name="qrySelectContact">
-            SELECT contactId,
-                    title,
-                    firstName,
-                    lastName,
-                    gender,
-                    dob,
-                    contactImage,
-                    address,
-                    street,
-                    district,
-                    STATE,
-                    country,
-                    pincode,
-                    emailId,
-                    phoneNo
-            FROM contactTable
-            WHERE #local.colName# = < cfqueryparam value = "#local.colValue#" cfsqltype = cf_sql_varchar >
-        </cfquery>
+        <cfquery name="local.qrySelectContact">
+              SELECT    ct.contactId,
+                        ct.title,
+                        ct.firstName,
+                        ct.lastName,
+                        ct.gender,
+                        ct.dob,
+                        ct.contactImage,
+                        ct.address,
+                        ct.street,
+                        ct.district,
+                        ct.STATE,
+                        ct.country,
+                        ct.pincode,
+                        ct.emailId,
+                        ct.phoneNo,
+                        STRING_AGG(rt.roleName, ',') AS roleName,
+                        STRING_AGG(ur.roleId, ',') AS roleId
+                FROM contactTable AS ct
+                LEFT JOIN userRole AS ur ON ct.contactId = ur.contactId
+                LEFT JOIN roleTable AS rt ON rt.roleId = ur.roleId
+                WHERE #local.colName# = <cfqueryparam value="#local.colValue#" cfsqltype="cf_sql_varchar">
+                GROUP BY ct.contactId, 
+                         ct.title,
+                         ct.firstName,
+                         ct.lastName,
+                         ct.gender,
+                         ct.dob,
+                         ct.contactImage,
+                         ct.address,
+                         ct.street,
+                         ct.district,
+                         ct.STATE,
+                         ct.country,
+                         ct.pincode,
+                         ct.emailId,
+                         ct.phoneNo
+            </cfquery>
+
 
     <cfif structKeyExists(arguments,"contactId")>
-        <cfset local.qrySelectRole = selectRoleById(arguments.contactId)>
 
-        <cfset local.structContactUser["contactId"] = qrySelectContact.contactId>
-        <cfset local.structContactUser["title"] = qrySelectContact.title>
-        <cfset local.structContactUser["firstName"] = qrySelectContact.firstName>
-        <cfset local.structContactUser["lastName"] = qrySelectContact.lastName>
-        <cfset local.structContactUser["gender"] = qrySelectContact.gender>
-        <cfset local.structContactUser["dob"] = dateFormat(qrySelectContact.dob , "yyyy-mm-dd")>
-        <cfset local.structContactUser["contactImage"] = qrySelectContact.contactImage>
-        <cfset local.structContactUser["address"] = qrySelectContact.address>
-        <cfset local.structContactUser["street"] = qrySelectContact.street>
-        <cfset local.structContactUser["district"] = qrySelectContact.district>
-        <cfset local.structContactUser["state"] = qrySelectContact.state>
-        <cfset local.structContactUser["country"] = qrySelectContact.country>
-        <cfset local.structContactUser["pincode"] = qrySelectContact.pincode>
-        <cfset local.structContactUser["emailId"] = qrySelectContact.emailId>
-        <cfset local.structContactUser["phoneNo"] = qrySelectContact.phoneNo>
-        <cfset local.structContactUser["roleSelect"]="">
-        <cfset local.structContactUser["roleValues"] = []>
-        <cfloop query="local.qrySelectRole">
-            <cfset local.structContactUser["roleSelect"]=local.structContactUser["roleSelect"] & " " & local.qrySelectRole.roleName>
-            <cfset arrayAppend(local.structContactUser["roleValues"], local.qrySelectRole.roleId)>
-        </cfloop>
+        <cfset local.structContactUser["contactId"] = local.qrySelectContact.contactId>
+        <cfset local.structContactUser["title"] = local.qrySelectContact.title>
+        <cfset local.structContactUser["firstName"] = local.qrySelectContact.firstName>
+        <cfset local.structContactUser["lastName"] = local.qrySelectContact.lastName>
+        <cfset local.structContactUser["gender"] = local.qrySelectContact.gender>
+        <cfset local.structContactUser["dob"] = dateFormat(local.qrySelectContact.dob , "yyyy-mm-dd")>
+        <cfset local.structContactUser["contactImage"] = local.qrySelectContact.contactImage>
+        <cfset local.structContactUser["address"] = local.qrySelectContact.address>
+        <cfset local.structContactUser["street"] = local.qrySelectContact.street>
+        <cfset local.structContactUser["district"] = local.qrySelectContact.district>
+        <cfset local.structContactUser["state"] = local.qrySelectContact.state>
+        <cfset local.structContactUser["country"] = local.qrySelectContact.country>
+        <cfset local.structContactUser["pincode"] = local.qrySelectContact.pincode>
+        <cfset local.structContactUser["emailId"] = local.qrySelectContact.emailId>
+        <cfset local.structContactUser["phoneNo"] = local.qrySelectContact.phoneNo>
+        <cfset local.structContactUser["roleName"] = local.qrySelectContact.roleName>
+        <cfset local.structContactUser["roleValues"] = local.qrySelectContact.roleId>
         
         <cfset local.result = local.structContactUser>
     <cfelse>
-        <cfset local.result = qrySelectContact>
+        <cfset local.result = local.qrySelectContact>
     </cfif>
     <cfreturn local.result>
     </cffunction>
 
-<!--- Select Role By Id      --->
-    <cffunction  name="selectRoleById">
-        <cfargument  name="contactId">
 
-         <cfquery name="local.qrySelectRole">
-            SELECT userRole.roleId, roleTable.roleName
-            FROM userRole
-            INNER JOIN roleTable
-            ON userRole.roleId = roleTable.roleId
-            WHERE contactId = < cfqueryparam value = "#arguments.contactId#" cfsqltype = cf_sql_varchar >
-        </cfquery>
-
-        <cfreturn local.qrySelectRole>
-    </cffunction>
 
 <!---   Delete Contact   --->
 
@@ -269,7 +269,7 @@
     <cffunction  name="editContact" returntype="any">
         <cfargument  name="structContactinfo" type="struct">
 
-         <cfquery name="qryPhnCheck">
+         <cfquery name="local.qryPhnCheck">
            SELECT COUNT(phoneNo) AS phnCount
             FROM contactTable
             WHERE phoneNo = <cfqueryparam value = "#arguments.structContactinfo["phoneNo"]#" cfsqltype = cf_sql_varchar >
@@ -277,7 +277,7 @@
                AND contactId != <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
         </cfquery>
 
-        <cfquery name="qryEmailCheck">
+        <cfquery name="local.qryEmailCheck">
            SELECT COUNT(emailId) AS emailCount
             FROM contactTable
             WHERE emailId = <cfqueryparam value = "#arguments.structContactinfo["emailId"]#" cfsqltype = cf_sql_varchar >
@@ -286,16 +286,16 @@
         </cfquery>
         
        
-        <cfif qryPhnCheck.phnCount GT 0>
+        <cfif local.qryPhnCheck.phnCount GT 0>
             <cfset local.result = "error">
-        <cfelseif  qryEmailCheck.emailCount GT 0>
+        <cfelseif  local.qryEmailCheck.emailCount GT 0>
             <cfset local.result = "error1">
         <cfelseif arguments.structContactinfo["emailId"] == session.structUserDetails["emailId"]>
             <cfset local.result = "error2">
         <cfelse>
             <cfset local.date = dateFormat(now(),"dd-mm-yyyy")>
 
-            <cfquery name="qryEditContact">
+            <cfquery name="local.qryEditContact">
                 UPDATE contactTable 
                 SET title = <cfqueryparam value="#arguments.structContactinfo["title"]#" cfsqltype=cf_sql_varchar>,
                     firstName = <cfqueryparam value="#arguments.structContactinfo["firstName"]#" cfsqltype=cf_sql_varchar>,
@@ -316,7 +316,7 @@
                 WHERE   contactId = <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
             </cfquery>
             
-            <cfquery name="qrydeleteRoles">
+            <cfquery name="local.qrydeleteRoles">
                 DELETE FROM userRole
                 WHERE contactId = <cfqueryparam value="#arguments.structContactinfo["addContactHidden"]#" cfsqltype=cf_sql_varchar>
             </cfquery>
@@ -330,39 +330,44 @@
                 </cfquery>
             </cfloop>
 
-            <cfset local.result = "ok">
+            <cfset local.result = "Updated">
         </cfif>
         <cfreturn local.result>
     </cffunction>
 
-<!---   Read data for spreadsheet   --->
-    <cffunction  name="spreadsheetDownload" returntype="any" access="remote">
+<!---    spreadsheet   --->
+    <cffunction  name="spreadsheetDownload" returntype="any" access="remote" returnformat="plain">
 
-        <cfset local.qryReadContact = selectContactRoles()>
-        <cfset local.fileName = createUUID() & ".xlsx" >
-        <cfset  local.theFile= expandPath("../Assets/Docs/"&local.fileName)>
+        <cfset local.qryReadContact = selectContact()>
+        <cfset queryDeleteColumn(local.qryReadContact, "contactId")>
+        <cfset queryDeleteColumn(local.qryReadContact, "title")>
+        <cfset queryDeleteColumn(local.qryReadContact, "contactImage")>
+        <cfset queryDeleteColumn(local.qryReadContact, "roleId")>
+        <cfset local.today = dateTimeFormat(now(),"dd-mm-yy-HH.nn.SS")>
+        <cfset local.filename = "#session.structUserDetails["fullName"]#" & "#local.today#"> 
+        <cfset  local.theFile= "../Assets/Docs/#local.filename#.xls">
         <cfset local.theSheet = SpreadsheetNew(true)>
         <cfset spreadsheetAddRow(local.theSheet,"First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number,Roles")>
         <cfset spreadsheetAddRows(local.theSheet, local.qryReadContact)>
         <cfset spreadsheetFormatRow(local.theSheet, {bold=true,alignment='center'}, 1)>
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
-        <cfreturn true>
+        <cfreturn local.theFile>
     </cffunction>
     
 <!--- Insert  Google User--->
     <cffunction  name="insertGoogleUser">
         <cfargument  name="structGoogleUser" type="struct">
 
-        <cfquery name="qryCheckEmail">
+        <cfquery name="local.qryCheckEmail">
             SELECT COUNT(emailId) 
             AS emailCount 
             FROM userInfo 
             WHERE emailId = <cfqueryparam value="#arguments.structGoogleUser["email"]#" cfsqltype="cf_sql_varchar"> 
         </cfquery>
 
-        <cfif qryCheckEmail.emailCount EQ 1>
+        <cfif local.qryCheckEmail.emailCount EQ 1>
 
-            <cfquery name="qrySelectUser">
+            <cfquery name="local.qrySelectUser">
                 SELECT userId,
                         fullName,
                         userName,
@@ -372,15 +377,15 @@
                 WHERE emailId = < cfqueryparam value = "#arguments.structGoogleUser["email"]#" cfsqltype = "cf_sql_varchar" >
             </cfquery>
 
-            <cfset session.structUserDetails["userId"] = qrySelectUser.userId>
-            <cfset session.structUserDetails["fullName"] = qrySelectUser.fullName>
-            <cfset session.structUserDetails["userName"] = qrySelectUser.userName>
-            <cfset session.structUserDetails["userImage"] = qrySelectUser.userImage>
-            <cfset session.structUserDetails["emailId"] = qrySelectUser.emailId>
+            <cfset session.structUserDetails["userId"] = local.qrySelectUser.userId>
+            <cfset session.structUserDetails["fullName"] = local.qrySelectUser.fullName>
+            <cfset session.structUserDetails["userName"] = local.qrySelectUser.userName>
+            <cfset session.structUserDetails["userImage"] = local.qrySelectUser.userImage>
+            <cfset session.structUserDetails["emailId"] = local.qrySelectUser.emailId>
             <cflocation  url="Home.cfm" addToken="no">
 
         <cfelse>
-                <cfquery name="qryUserSignUp">
+                <cfquery name="local.qryUserSignUp">
                     INSERT INTO userInfo (
                                 fullName,
                                 emailId,
@@ -397,7 +402,7 @@
                         )
             </cfquery>
 
-            <cfquery name="qrySelectUser">
+            <cfquery name="local.qrySelectUser">
                 SELECT userId,
                        fullName,
                        userName,
@@ -407,19 +412,19 @@
                 WHERE emailId=<cfqueryparam value="#arguments.structGoogleUser["email"]#" cfsqltype="cf_sql_varchar">
             </cfquery>
 
-            <cfset session.structUserDetails["userId"] = qrySelectUser.userId>
-            <cfset session.structUserDetails["fullName"] = qrySelectUser.fullName>
-            <cfset session.structUserDetails["userName"] = qrySelectUser.userName>
-            <cfset session.structUserDetails["userImage"] = qrySelectUser.userImage>
-            <cfset session.structUserDetails["emailId"] = qrySelectUser.emailId>
+            <cfset session.structUserDetails["userId"] = local.qrySelectUser.userId>
+            <cfset session.structUserDetails["fullName"] = local.qrySelectUser.fullName>
+            <cfset session.structUserDetails["userName"] = local.qrySelectUser.userName>
+            <cfset session.structUserDetails["userImage"] = local.qrySelectUser.userImage>
+            <cfset session.structUserDetails["emailId"] = local.qrySelectUser.emailId>
             <cflocation  url="Home.cfm" addToken="no">
 
         </cfif>
     </cffunction>
-<!---  Birthday Wish    --->
+<!---  Birthday Wish    ---> 
      <cffunction  name="birthdayWish"> 
           
-        <cfquery name="qryBday">
+        <cfquery name="local.qryBday">
             SELECT firstName,
                    lastName,
                    dob,
@@ -429,7 +434,7 @@
 
         <cfset local.today = dateFormat(now(),"dd-mm")>
         
-        <cfloop query="qryBday">
+        <cfloop query="local.qryBday">
             <cfset local.userDob = dateFormat(qryBday.dob,"dd-mm")>
             <cfdump  var="#local.today#">
             <cfdump  var="#local.userDob#">
@@ -457,36 +462,15 @@
             FROM roleTable
         </cfquery>
         <cfreturn local.qrySelectRole>
+
     </cffunction>
 
-
-<!--- Select Contact Details and roles --->
-    <cffunction  name="selectContactRoles">
-
-        <cfquery name="local.qrySelectContactRoles">
-            select	firstName,
-                    lastName,
-                    gender,
-                    dob,
-                    address,
-                    street,
-                    district,
-                    STATE,
-                    country,
-                    pincode,
-                    emailId,
-                    phoneNo,
-                    (
-                    SELECT STRING_AGG(roleName,',')
-                    FROM userRole
-                    INNER JOIN roleTable
-                    ON userRole.roleId = roleTable.roleId
-                    WHERE userRole.contactId = contactTable.contactId 
-                    )
-                    AS roles
-            FROM contactTable
-        </cfquery>
-        <cfreturn local.qrySelectContactRoles>
+<!--- PDF  --->
+    <cffunction  name="pdfConvert" returnformat="plain" access="remote">
+        <cfinclude  template="../pdfFile.cfm">
+        <cfset local.fileUrl = "../Assets/Docs/#local.filename#.pdf">
+        <cfreturn local.fileUrl>
     </cffunction>
+
 
 </cfcomponent>
