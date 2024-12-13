@@ -6,4 +6,5 @@
     <cfproperty  name="phoneNo">
     <cfproperty  name="contactImage">
     <cfproperty  name="_createdBy">
+    <cfproperty  name="active">
 </cfcomponent>

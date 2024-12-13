@@ -119,6 +119,16 @@ header{
     white-space: nowrap;
 }
 
+.uploadFileBtn{
+    border-color: #00c41a;
+    color: #f5f5f5;
+    font-size: 14px;
+    border-radius: 20px;
+    background-color: #00c41a;
+    width: 98%;
+    white-space: nowrap;
+}
+
 .nameHeading{
     width:18%;
 }
@@ -434,6 +444,72 @@ header{
 .chosen-container
 {
     width:50% !important;
+}
+
+.modalUploadBox{
+    width:45vw;
+    background-color: #ffffff;
+    min-height:60vh;
+}
+
+.modalUploadBox .topBox{
+    padding: 15px;
+    justify-content: right;
+}
+
+.modalUploadBox .topBox .plainFileBtn{
+    background-color: #00c41a;
+    color:#ffffff;
+    border:none;
+}
+
+.modalUploadBox .topBox .dataFileBtn{
+    background-color: #419ae9;
+    color:#ffffff;
+    border:none;
+}
+
+.modalCloseBtn{
+    border-color: #337AB7;
+    background-color: #ffffff;;
+    color: #337AB7;
+    border-radius: 20px;
+    width:20%;
+    padding:5px;
+}
+.modalSubmitBtn{
+    border-color: #337AB7;
+    background-color: #337ab7;;
+    color: #ffffff;
+    border-radius: 20px;
+    width:20%;
+    padding:5px;
+}
+
+.modalUploadBox .midBox{
+    height:35vh;
+}
+
+.modalUploadBox .btmBox{
+    justify-content: flex-start !important;
+}
+
+.modalUploadBox .midBox .heading span{
+    color: #337AB7;
+    font-size:20px;
+    font-weight: 600;
+}
+
+.modalUploadBox .midBox .heading {
+    border-bottom: 2px solid #337AB7;
+    width:70%;
+}
+
+
+.modalUploadBox .midBox .uploadBox span{
+    color: #337AB7;
+    font-size:15px;
+    font-weight: 600;
 }
 
 
