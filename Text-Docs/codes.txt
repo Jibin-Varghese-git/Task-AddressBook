@@ -1,0 +1,28 @@
+<cfquery name="qryUserSignUp">
+            INSERT INTO userInfo 
+            (fullName,emailId,userName,password,userImage)
+            VALUES (
+            <cfqueryparam value="#structUserInfo["fullName"]#" cfsqltype=cf_sql_varchar>
+            <cfqueryparam value="#structUserInfo["emailId"]#" cfsqltype=cf_sql_varchar>
+            <cfqueryparam value="#structUserInfo["userName"]#" cfsqltype=cf_sql_varchar>
+            <cfqueryparam value="#structUserInfo["password"]#" cfsqltype=cf_sql_varchar>
+            <cfqueryparam value="#structUserInfo["userImage"]#" cfsqltype=cf_sql_varchar>
+            )
+        </cfquery>
+
+
+
+<cfset local.obj = createObject("component", "components.addressBook")>
+            <cfset local.result = local.obj.addContact(local.structContactInfo)>
+
+
+
+	
+
+            <cfset local.obj = createObject("component", "components.addressBook")>
+            <cfset local.result = local.obj.addContact(local.structContactInfo)>
+            <cfdump  var="#local.result#">
+
+
+
+	

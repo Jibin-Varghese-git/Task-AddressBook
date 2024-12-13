@@ -39,6 +39,7 @@
                                 </div>
                                 <h6 class="userNameSpan ms-3">#session.structUserDetails["fullName"]#<h6>
                                 <button type="button" class="createContactBtn mt-3 py-2" onclick="funCreateContact()" data-bs-toggle="modal" data-bs-target="##modalEdit">CREATE CONTACT</button>
+                                <button type="button" class="uploadFileBtn mt-3 py-2"  data-bs-toggle="modal" data-bs-target="##modalUpload">UPLOAD FILE</button>
                             </div>
 
                             <div class="contentBoxRight bg-white p-2" id="contentBoxRight">
@@ -57,7 +58,8 @@
 
                                 <!--- Contact Listing --->
                                 <cfset ormReload()>
-                                <cfset  qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#})>
+                                <cfset local.activeValue = 1>
+                                <cfset  qryReadContact = entityLoad("fetchUserOrm",{_createdBy = #session.structUserDetails["userId"]#,active = local.activeValue})>
                                  
                                 <cfoutput>
                                 
@@ -85,6 +87,34 @@
                             </div>
                         </div>
                     </cfoutput>
+                </div>
+                <!--- Modal Upload File --->
+                <div class="modal fade" id="modalUpload" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modalUploadBox modal-content p-2">
+
+                            <div class="topBox d-flex">
+                                    <button class="dataFileBtn me-1">File With Data</button>
+                                    <button class="plainFileBtn ms-2">Plain File</button>
+                            </div>
+
+                            <div class="midBox  p-3">
+                                <div class="heading my-4">
+                                    <span>Upload Excel File</span>
+                                </div>
+                                <div class="uploadBox">
+                                    <span>Upload Excel *</span><br>
+                                    <input type="file">
+                                </div>
+                            </div>
+
+                            <div class="modal-footer btmBox">
+                                <button type="submit"    class="modalSubmitBtn">Submit</button>
+                                <button type="button" class="modalCloseBtn" data-bs-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
                 <!--- Modal Edit/Add --->
                 <div class="modal fade" id="modalEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

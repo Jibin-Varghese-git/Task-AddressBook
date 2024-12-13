@@ -475,7 +475,7 @@ function funXls()
 }
 
 //Function for PDF
-function funPdf(){
+function funPdf(){ 
     if(confirm("Do you want to download PDF"))
     {
         $.ajax({
