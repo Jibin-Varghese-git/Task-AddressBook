@@ -400,7 +400,19 @@
         <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
         <cfreturn local.theFile>
     </cffunction>
-    
+
+<!--- Plain Spreadsheet --->
+    <cffunction  name="plainXls" returntype="any" access="remote" returnformat="plain">
+        <cfset local.today = dateTimeFormat(now(),"dd-mm-yy-HH.nn.SS")>
+        <cfset local.filename = "#session.structUserDetails["fullName"]#" & "#local.today#"> 
+        <cfset  local.theFile= "../Assets/Docs/#local.filename#.xls">
+        <cfset local.theSheet = SpreadsheetNew(true)>
+        <cfset spreadsheetAddRow(local.theSheet,"Title,First Name,Last Name,Gender,Date of Birth,Address,Street,District,State,Country,Pincode,emailId,Phone Number,Roles")>
+        <cfset spreadsheetFormatRow(local.theSheet, {bold=true,alignment='center'}, 1)>
+        <cfspreadsheet action="write" filename="#local.theFile#" name="local.theSheet" sheetname="mock_data" overwrite=true>
+        <cfreturn local.theFile>
+    </cffunction>
+
 <!--- Insert  Google User--->
     <cffunction  name="insertGoogleUser">
         <cfargument  name="structGoogleUser" type="struct">
@@ -519,5 +531,15 @@
         <cfreturn local.fileUrl>
     </cffunction>
 
+<!---  Read Xls    --->
+    <cffunction  name="readXls" access="remote" returnformat="json">
+        <cfargument  name="fileXls">
+        <cfspreadsheet  action="read" src="#arguments.fileXls#" query="dataXls" headerrow="1" excludeHeaderRow="true"> 
+        <cfloop query="dataXls">
+            <cfset  = >
+            <cfreturn dataXls["first name"]>
+        </cfloop>
+        
+    </cffunction>
 
-</cfcomponent>
+</cfcomponent> 
