@@ -332,8 +332,15 @@ function funClose(){
     document.getElementById("errorEmail").innerHTML="";
     document.getElementById("errorPhoneNo").innerHTML="";
     document.getElementById("errorRole").innerHTML="";
+   
+    $('#roleSelect').val("");
     $('#roleSelect').val("");
     $('#roleSelect').trigger('chosen:updated'); 
+}
+
+function funCloseModal()
+{
+    document.getElementById("uploadXlsError").innerHTML="";
 }
 
 //Function delete contact
@@ -409,7 +416,7 @@ function funEditContact(contactId){
                 {
                     structContactUser=JSON.parse(result); 
                     var roleValues=structContactUser.roleValues.split(",");
-                    document.getElementById("modalHeading").innerHTML= "EDIT CONTACT"
+                    document.getElementById("modalHeading").innerHTML= "EDIT CONTACT";
                     document.getElementById("contactTitle").value= structContactUser.title;
                     document.getElementById("firstName").value= structContactUser.firstName;
                     document.getElementById("lastName").value= structContactUser.lastName;
@@ -474,6 +481,25 @@ function funXls()
     } 
 }
 
+//Function plain Data
+function funPlainXls()
+{
+    if(confirm("Do you want to download"))
+    {
+        $.ajax({
+            method : "GET",
+            url : "components/addressBook.cfc?method=plainXls",
+            success : function(result){
+                if(result)
+                {
+                    funDownload(result);
+                }
+
+            }
+        });
+    } 
+}
+
 //Function for PDF
 function funPdf(){ 
     if(confirm("Do you want to download PDF"))
@@ -505,4 +531,41 @@ function funDownload(fileUrl)
     createTag.click();
     createTag.remove();
 }
+
+//Function Read Xls
+function funReadXls()
+{
+    const formData = new FormData();
+    const fileXls= document.getElementById("uploadedXls").files[0];
+    const fileCheck= document.getElementById("uploadedXls").value;
+    if (fileCheck.length ==0)
+    {
+        document.getElementById("uploadXlsError").innerHTML="Upload the file";
+        event.preventDefault();
+    }
+    else
+    {
+
+        formData.append("fileXls",fileXls)
+        $.ajax({
+            method : "Post",
+            url : "components/addressBook.cfc?method=readXls",
+            data : formData,
+            processData : false,
+            contentType : false ,
+            success : function(result){
+                if(result)
+                {
+                    console.log(result)
+                    alert(result)
+                }
+                else
+                {
+                    alert("Error")
+                }
+            }
+        })
+    }    
+}
+
 
