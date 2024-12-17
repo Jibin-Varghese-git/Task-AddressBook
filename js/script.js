@@ -556,7 +556,6 @@ function funReadXls()
             success : function(result){
                 if(result)
                 {
-                    console.log(result)
                     alert(result)
                 }
                 else
