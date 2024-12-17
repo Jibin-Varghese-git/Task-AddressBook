@@ -532,14 +532,15 @@
     </cffunction>
 
 <!---  Read Xls    --->
-    <cffunction  name="readXls" access="remote" returnformat="json">
-        <cfargument  name="fileXls">
-        <cfspreadsheet  action="read" src="#arguments.fileXls#" query="dataXls" headerrow="1" excludeHeaderRow="true"> 
-        <cfloop query="dataXls">
-            <cfset  = >
-            <cfreturn dataXls["first name"]>
-        </cfloop>
-        
-    </cffunction>
+<cffunction name="readXls" access="remote" returnformat="json">
+    <cfargument name="fileXls">
+
+    <cfspreadsheet action="read" src="#arguments.fileXls#" query="dataXls" headerrow="1" excludeHeaderRow="true"> 
+    <cfset local.qryHeadings = ["first name","last name","gender","date of birth","address","street","district","state","country","pincode","emailId","phone number","roles"]>
+
+    <cfreturn local.qryHeadings>
+</cffunction>
+
+
 
 </cfcomponent> 
